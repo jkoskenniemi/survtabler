@@ -1,0 +1,31 @@
+Package: survtabler
+Title: Workflow for Fast, Concise, and Legible Survival Analysis
+Version: 0.0.0.9001
+Authors@R: 
+    person("Jaakko", "Koskenniemi", , "jajoko@utu.fi", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-9348-3325"))
+Description: 
+    Survtable helps to make survival analysis scripts function-based. This 
+    reduces unnecessary repetition and is therefore quick to write and easy to read.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports:
+    dplyr,
+    magrittr,
+    tidyr,
+    ggplot2,
+    broom,
+    survival,
+    scales,
+    stringr,
+    purrr,
+    tidyselect
+Suggests: 
+    testthat (>= 3.0.0),
+    waldo
+Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
+LazyData: true
