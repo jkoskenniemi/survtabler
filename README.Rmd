@@ -35,6 +35,7 @@ This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
 library(survtabler)
+library(magrittr)
 
 #Specify all combinations of exposure, outcome, time variables and data_name
 survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
