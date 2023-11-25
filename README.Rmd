@@ -1,0 +1,63 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# survtabler
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`survival` packge in R is great. It is allows analyst to run a survival model with a single piece of code and evaluate the model in various ways. The goal of the `survtabler` is to guide the user to an easy workflow based on writing of fast, concise, and easy-to-read code for surival analyses in R. This is achieved by *function-based* workflow, where many typical steps (modeling, graphing, analyses of violations of proporational hazards model) in typical survival analysis is automated with functions. These functions work, because survtabler enforces the anlyst to work 
+
+## Installation
+
+You can install the development version of survtabler from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("jkoskenniemi/survtabler")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(survtabler)
+
+#Specify all combinations of exposure, outcome, time variables and data_name
+survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
+                 outcome_vars = c("outcome1", "outcome2"),
+                 covariates = "age + sex + hla",
+                 time_var = "cens_time",
+                 data_name = "example_ti") 
+
+#Run Cox proportional hazard models
+survtable_1_coxph <- survtable_1 %>%  
+  model_survtable()
+
+#Draw forrest plots
+survtable_1_coxph %>%  
+  get_coefs(c("exposure_2cat", "exposure_continuous"))  %>%  #Get coefficients for forrest plots
+  graph_coefs(title = "**Your title here**") #Draw forrest plots
+
+#Get metadata of models
+survtable_1_coxph %>%  
+  get_model_meta()
+
+#Catch violations of Cox Proportional hazards assumptions
+survtable_1_coxph %>%  
+  catch_nonph()
+```
+
