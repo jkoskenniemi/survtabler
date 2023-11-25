@@ -5,7 +5,7 @@ Authors@R:
     person("Jaakko", "Koskenniemi", , "jajoko@utu.fi", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9348-3325"))
 Description: 
-    Survtable helps to make survival analysis scripts function-based. This 
+    Survtabler helps to make survival analysis scripts function-based. This 
     reduces unnecessary repetition and is therefore quick to write and easy to read.
 License: GPL (>= 3)
 Encoding: UTF-8

@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(survtable)
+library(survtabler)
 
-test_check("survtable")
+test_check("survtabler")
