@@ -1,5 +1,5 @@
 Package: survtabler
-Title: Wrappers for Fast, Concise, and Easy-to-Read Survival Analysis
+Title: Wrappers for Fast, Concise, and Easy-to-Read Survival Analysis at Scale
 Version: 0.0.0.9001
 Authors@R: 
     person("Jaakko", "Koskenniemi", , "jajoko@utu.fi", role = c("aut", "cre"),
