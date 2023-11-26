@@ -1,5 +1,5 @@
 Package: survtabler
-Title: Workflow for Fast, Concise, and Legible Survival Analysis
+Title: Wrappers for Fast, Concise, and Easy-to-Read Survival Analysis
 Version: 0.0.0.9001
 Authors@R: 
     person("Jaakko", "Koskenniemi", , "jajoko@utu.fi", role = c("aut", "cre"),
@@ -23,8 +23,7 @@ Imports:
     purrr,
     tidyselect
 Suggests: 
-    testthat (>= 3.0.0),
-    waldo
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
