@@ -28,20 +28,26 @@ You can install the development version of `survtabler` from
 
 ## Example
 
-The first and the most important step is to provide a recipe for the
-survival analysis in R. This is done by creating a `survtable` object:
-essentially a data.frame that lists in each row two items needed for Cox
-Proportional Hazards Model modeled under the hood using
-`survival::coxph()`: `formula` and `data`. Function `create_survtable()`
-lists all combinations of analysis data (`data_name`) and variables
-given for outcome, exposure, survival time (`outcome_vars`,
-`exposure_vars`, `time_var`). Using these input and `covariates` used to
-adjust the model, it formulates the Cox Porportional Hazards model
-`formula` for each combination (each row of the `survtable` data frame).
+The first step is to plan and specify, which Survival models are
+analyzed. `create_survtable()` builds a data.frame that includes each
+combination of primary exposures of interest (specified in input as
+`expoure_vars`), outcomes (`outcome_vars`), follow-up time (`time_var`)
+and analysis data (`data`). Optionally, subgroup analyses can be
+requested by providing the variable and values that that define subgroup
+analyses (`submodel_var` and `submodel_values`).
 
 ``` r
 library(survtabler)
 library(magrittr)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 
 #Specify all combinations of exposure, outcome, time variables and data_name
 survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
@@ -51,16 +57,35 @@ survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_con
                  data_name = "example_ti")
 ```
 
-Once the `survtable` is established, it is very easy to run Cox
-Proportional Hazards model for each combination and return the result as
-a list
+`survtable` includes for each row everything that is needed for survival
+analyses by `survival::coxph`: data (`data_name`) and model formula
+(`formula_str`).
+
+``` r
+survtable_1 %>% select(data_name, formula_str)
+#> # A tibble: 4 x 2
+#>   data_name  formula_str                                                      
+#>   <chr>      <chr>                                                            
+#> 1 example_ti Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla      
+#> 2 example_ti Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla      
+#> 3 example_ti Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#> 4 example_ti Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+```
+
+After the `survtable` has been created, in principle the following steps
+(`model_survtable()`, `get_coefs()`, `graph_coefs()`,
+`get_model_metadata()`, `catch_nonph()`, can be automated and included
+in a single function (to be created). However, they are all are shown
+here to show the entire process.
+
+First, each models are fitted and returned as a list
 
 ``` r
 models <- survtable_1 %>%  
   model_survtable()
 ```
 
-And then get the model coefficients and draw a forest plot, …
+And then model coefficients are extracted and a forest plot drawn, …
 
 ``` r
 models  %>%  
@@ -70,7 +95,7 @@ models  %>%
 
 <img src="man/figures/README-example_4-1.png" width="100%" />
 
-… other model metadata, …
+… model metadata extracted, …
 
 ``` r
 models  %>%  
@@ -87,8 +112,8 @@ models  %>%
 #> 4 survival::Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
 ```
 
-…, and finally analyze the models for departures of proportionality of
-the hazards assumption.
+… and finally models that violate proportionality of the hazards
+assumption can be caught (the following example has none).
 
 ``` r
 models  %>%  
