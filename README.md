@@ -23,25 +23,7 @@ You can install the development version of `survtabler` from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("jkoskenniemi/survtabler")
-#> Downloading GitHub repo jkoskenniemi/survtabler@HEAD
-#> stringi (1.8.1 -> 1.8.2) [CRAN]
-#> Installing 1 packages: stringi
-#> 
-#>   There is a binary version available but the source version is later:
-#>         binary source needs_compilation
-#> stringi  1.8.1  1.8.2              TRUE
-#> installing the source package 'stringi'
-#> Warning in i.p(...): installation of package 'stringi' had non-zero exit status
-#> -- R CMD build -----------------------------------------------------------------
-#>          checking for file 'C:\Users\jajoko\AppData\Local\Temp\Rtmp0Gta7F\remotes1d9026356404\jkoskenniemi-survtabler-f1665fe/DESCRIPTION' ...  v  checking for file 'C:\Users\jajoko\AppData\Local\Temp\Rtmp0Gta7F\remotes1d9026356404\jkoskenniemi-survtabler-f1665fe/DESCRIPTION' (461ms)
-#>       -  preparing 'survtabler':
-#>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
-#>       -  checking for LF line-endings in source and make files and shell scripts
-#>   -  checking for empty or unneeded directories
-#>       -  building 'survtabler_0.0.0.9001.tar.gz'
-#>      
-#> 
+# devtools::install_github("jkoskenniemi/survtabler")
 ```
 
 ## Example
@@ -95,14 +77,14 @@ models  %>%
   get_model_meta()
 #>      n n_event n_missing
 #> 1 8000    3996         0
-#> 2 8000    3996         0
+#> 2 8000    3990         0
 #> 3 8000    3996         0
-#> 4 8000    3996         0
-#>                                                                 formula
-#> 1 survival::Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
-#> 2 survival::Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
-#> 3 survival::Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
-#> 4 survival::Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
+#> 4 8000    3990         0
+#>                                                                       formula
+#> 1       survival::Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
+#> 2       survival::Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
+#> 3 survival::Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#> 4 survival::Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
 ```
 
 …, and finally analyze the models for departures of proportionality of

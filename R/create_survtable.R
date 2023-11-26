@@ -26,6 +26,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom tidyr crossing
 #' @importFrom purrr map_lgl
+#' @importFrom stringr str_remove
 #'
 #'
 #' @examples
@@ -97,7 +98,7 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
 
   # 2. The main exposure of interest is time-invariant--------------------------
   if (model_type %in% c("ti", "time_invariant")) {
-    # 3. no subgroup analyses--------------------------------------------------
+    # 3. subgroup analyses requested--------------------------------------------
     if (!is.null(submodel_var) & !is.null(submodel_values)) {
       submodel <- tidyr::crossing("submodel_var" = submodel_var, "submodel_value" = submodel_values)
       combinations <- tidyr::crossing(
@@ -109,14 +110,11 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
 
       model_input_table %>%
         dplyr::mutate(covariates = covariates) %>%
-        dplyr::mutate(
-          formula_str =
-            ifelse(is.null(covariates),
-              paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var),
-              paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariates)
-            )
-        )
-      # 4. subgroup analyses requested-----------------------------------------
+        dplyr::mutate(formula_str =
+                        paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariates)) %>% 
+        dplyr::mutate(formula_str = stringr::str_remove(formula_str, " \\+ $"))
+        
+      # 4. no subgroup analyses------------------------------------------------
     } else {
       combinations <- tidyr::crossing(
         "data_name" = data_name, "exposure_var" = exposure_vars,
@@ -126,13 +124,10 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
 
       model_input_table %>%
         dplyr::mutate(covariates = covariates) %>%
-        dplyr::mutate(
-          formula_str =
-            ifelse(is.null(covariates),
-              paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var),
-              paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariates)
-            )
-        ) %>%
+        dplyr::mutate(formula_str = 
+                        paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", 
+                               exposure_var, " + ", covariates)) %>% 
+        dplyr::mutate(formula_str = stringr::str_remove(formula_str, " \\+ $")) %>%
         dplyr::mutate(submodel_var = NA, submodel_value = NA)
     }
 
