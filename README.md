@@ -27,8 +27,13 @@ the same). Associations should be adjusted for age (`age`) and HLA DR-DQ
 genotype (`hla`) unless models are run only in subgroups defined by the
 HLA genotype (DR3/4, DR3/3, and DR4/4).
 
-<!-- <details> -->
-<!--   <summary> Here is a typical imperative script that analyzes the data in 129 lines </summary> -->
+<details>
+–\>
+<summary>
+Here is a typical imperative script that analyzes the data in 129 lines
+</summary>
+
+–\>
 
     #> 
     #> Attaching package: 'dplyr'
@@ -250,7 +255,7 @@ HLA genotype (DR3/4, DR3/3, and DR4/4).
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
-<!--  </details> -->
+</details>
 
 Here is how that would be analyzed with survtabler in 15 lines.
 

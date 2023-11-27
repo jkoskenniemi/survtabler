@@ -27,8 +27,8 @@ knitr::opts_chunk$set(
 
 Let `example_ti` be a simulated survival data.frame with 8,000 individuals who either experienced an outcome 1 or 2. An analyst would be interested on an association between exposures `exposure_2cat` and `exposure_continuous` on two different outcomes (`outcome1` and `outcome2` - for simplicity here the censoring_time for both of them is the same). Associations should be adjusted for age (`age`) and HLA DR-DQ genotype (`hla`) unless models are run only in subgroups defined by the HLA genotype (DR3/4, DR3/3, and DR4/4). 
 
-<!-- <details> -->
-<!--   <summary> Here is a typical imperative script that analyzes the data in 129 lines </summary> -->
+<details> -->
+<summary> Here is a typical imperative script that analyzes the data in 129 lines </summary> -->
 
 ```{r echo = FALSE}
 library(dplyr)
@@ -163,8 +163,7 @@ coefficients %>%
   facet_wrap(~factor(outcome):factor(hla))
 ```
 
-<!--  </details> -->
-
+</details>
 
 Here is how that would be analyzed with survtabler in 15 lines.
 
