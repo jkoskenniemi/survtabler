@@ -21,6 +21,10 @@ automated with functions.
 <!-- <details> -->
 <!--   <summary>Click me</summary> -->
 
+<details>
+  <summary> Click here to show a long imperative script that analyzes the data </summary>
+
+
 ``` r
 library(dplyr)
 #> 
@@ -391,7 +395,7 @@ A simple example using simulated data. Using imperative programming, the
 analysis require a lot of repetitive writing of same blocks of code, and
 would look like this (please suggest if this can be shortened).
 
-Copypasting
+</details>
 
 The first step is to plan and specify, which Survival models are
 analyzed. `create_survtable()` builds a data.frame that includes each
