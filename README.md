@@ -16,21 +16,10 @@ by *function-based* workflow, where many typical steps (modeling,
 graphing, analyses of violations of proportional hazards model) are
 automated with functions.
 
-## Installation
+## Motivation
 
-You can install the development version of `survtabler` from
-[GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-# devtools::install_github("jkoskenniemi/survtabler")
-```
-
-## Example
-
-A simple example using simulated data. Using imperative programming, the
-analysis require a lot of repetitive writing of same blocks of code, and
-would look like this (please suggest if this can be shortened).
+<!-- <details> -->
+<!--   <summary>Click me</summary> -->
 
 ``` r
 library(dplyr)
@@ -382,7 +371,25 @@ coefficients %>%
   facet_wrap(~factor(outcome):factor(hla))
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+<!--  </details> -->
+
+## Installation
+
+You can install the development version of `survtabler` from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+# devtools::install_github("jkoskenniemi/survtabler")
+```
+
+## Example
+
+A simple example using simulated data. Using imperative programming, the
+analysis require a lot of repetitive writing of same blocks of code, and
+would look like this (please suggest if this can be shortened).
 
 Copypasting
 
