@@ -32,6 +32,10 @@ A simple example using simulated data. Using imperative programming, the
 analysis require a lot of repetitive writing of same blocks of code, and
 would look like this (please suggest if this can be shortened).
 
+<details>
+  <summary> Click here to show a long imperative script that analyzes the data </summary>
+
+
 ``` r
 library(dplyr)
 #> 
@@ -384,7 +388,7 @@ coefficients %>%
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
-Copypasting
+</details>
 
 The first step is to plan and specify, which Survival models are
 analyzed. `create_survtable()` builds a data.frame that includes each
