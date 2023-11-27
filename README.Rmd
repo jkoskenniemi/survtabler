@@ -27,10 +27,10 @@ knitr::opts_chunk$set(
 
 Let `example_ti` be a simulated survival data.frame with 8,000 individuals who either experienced an outcome 1 or 2. An analyst would be interested on an association between exposures `exposure_2cat` and `exposure_continuous` on two different outcomes (`outcome1` and `outcome2` - for simplicity here the censoring_time for both of them is the same). Associations should be adjusted for age (`age`) and HLA DR-DQ genotype (`hla`) unless models are run only in subgroups defined by the HLA genotype (DR3/4, DR3/3, and DR4/4). 
 
-<details> -->
+<details>
 <summary> Here is a typical imperative script that analyzes the data in 129 lines </summary> -->
 
-```{r echo = FALSE}
+```{r eval = FALSE}
 library(dplyr)
 library(survival)
 library(survtabler)
@@ -191,23 +191,20 @@ models  %>% catch_nonph()
 
 You can install the development version of `survtabler` from [GitHub](https://github.com/) with:
 
-```{r class.source = 'fold-show'}
-# install.packages("devtools")
-# devtools::install_github("jkoskenniemi/survtabler")
+```{r eval = FALSE}
+install.packages("devtools")
+devtools::install_github("jkoskenniemi/survtabler")
 ```
 
 ## Example
 
 A simple example using simulated data. Using imperative programming, the analysis require a lot of repetitive writing of same blocks of code, and would look like this (please suggest if this can be shortened).
 
-
-Copypasting
-
-
 The first step is to plan and specify, which Survival models are analyzed. `create_survtable()` builds a data.frame that includes each combination of primary exposures of interest (specified in input as `expoure_vars`), outcomes (`outcome_vars`), follow-up time (`time_var`) and analysis data (`data`). Optionally, subgroup analyses can be requested by providing the variable and values that that define subgroup analyses (`submodel_var` and `submodel_values`).
 
-```{r class.source = 'fold-show'}
-
+```{r}
+library(survtabler)
+library(dplyr)
 
 #Specify all combinations of exposure, outcome, time variables and data_name
 survtable_1 <- 
@@ -221,34 +218,34 @@ survtable_1 <-
 
 `survtable` includes for each row everything that is needed for survival analyses by `survival::coxph`: data (`data_name`) and model formula (`formula_str`).
 
-```{r class.source = 'fold-show'}
+```{r}
 survtable_1 %>% select(data_name, formula_str)
 ```
 
 After the `survtable` has been created, in principle the following steps (`model_survtable()`, `get_coefs()`, `graph_coefs()`, `get_model_metadata()`, `catch_nonph()`, can be automated and included in a single function (to be created). However, they are all are shown here to show the entire process.  
 
 First, each models are fitted and returned as a list
-```{r class.source = 'fold-show'}
+```{r}
 models <- survtable_1 %>%  
   model_survtable()
 ```
 
 
 And then model coefficients are extracted and a forest plot drawn, ...
-```{r class.source = 'fold-show'}
+```{r}
 models  %>%  
   get_coefs(c("exposure_2cat", "exposure_continuous"))  %>%  #Get coefficients for forrest plots
   graph_coefs(title = "**Your title here**") #Draw forest plots
 ```
 
 ... model metadata extracted, ...
-```{r class.source = 'fold-show'}
+```{r}
 models  %>%  
   get_model_meta()
 ```
 
 ... and finally models that violate proportionality of the hazards assumption can be caught (the following example has none).
-```{r class.source = 'fold-show'}
+```{r}
 models  %>%  
   catch_nonph()
 ```
