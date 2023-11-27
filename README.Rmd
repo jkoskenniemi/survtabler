@@ -2,7 +2,6 @@
 output: github_document
 editor_options: 
   chunk_output_type: console
-  code_folding: hide
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -24,13 +23,14 @@ knitr::opts_chunk$set(
 `survival` package in R is great for interactively and flexibly running survival models and evaluate the resulting model. However, it does not "teach" any structure for an efficient workflow, and often leads to imperative programming and long and complicated analysis scripts. The aim of `survtabler` is to make survival analysis fast, concise, and intuitive while keeping the analysis code easy to read. This is achieved by *function-based* workflow, where many typical steps (modeling, graphing, analyses of violations of proportional hazards model) are automated with functions.
 
 
-## Motivation
+## Motivation & example
+
+Let `example_ti` be a simulated survival data.frame with 8,000 individuals who either experienced an outcome 1 or 2. An analyst would be interested on an association between exposures `exposure_2cat` and `exposure_continuous` on two different outcomes (`outcome1` and `outcome2` - for simplicity here the censoring_time for both of them is the same). Associations should be adjusted for age (`age`) and HLA DR-DQ genotype (`hla`) unless models are run only in subgroups defined by the HLA genotype (DR3/4, DR3/3, and DR4/4). 
 
 <!-- <details> -->
-<!--   <summary>Click me</summary> -->
+<!--   <summary> Here is a typical imperative script that analyzes the data in 129 lines </summary> -->
 
-
-```{r}
+```{r echo = FALSE}
 library(dplyr)
 library(survival)
 library(survtabler)
@@ -164,6 +164,29 @@ coefficients %>%
 ```
 
 <!--  </details> -->
+
+
+Here is how that would be analyzed with survtabler in 15 lines.
+
+```{r eval = FALSE}
+survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
+                 outcome_vars = c("outcome1", "outcome2"),
+                 covariates = "age + sex + hla",
+                 time_var = "cens_time",
+                 data_name = "example_ti")
+
+survtable_1 %>% select(data_name, formula_str)
+
+models <- survtable_1 %>% model_survtable()
+
+models %>% get_coefs(c("exposure_2cat", "exposure_continuous")) %>% 
+  graph_coefs()
+
+models  %>% get_model_meta()
+
+models  %>% catch_nonph()
+```
+
 
 ## Installation
 
