@@ -168,21 +168,26 @@ coefficients %>%
 Here is how that would be analyzed with survtabler in 15 lines.
 
 ```{r eval = FALSE}
+#Build a 'survtable' with combinations of survival model data and model formula
 survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
-                 outcome_vars = c("outcome1", "outcome2"),
-                 covariates = "age + sex + hla",
-                 time_var = "cens_time",
-                 data_name = "example_ti")
+                                outcome_vars = c("outcome1", "outcome2"),
+                                covariates = "age + sex + hla",
+                                submodel_var = "hla",
+                                submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
+                                time_var = "cens_time",
+                                data_name = "example_ti")
 
-survtable_1 %>% select(data_name, formula_str)
-
+#Run all Cox Proportional Hazards models listed in survtable_1
 models <- survtable_1 %>% model_survtable()
 
+#Extract coefficients and graph a forrest plot
 models %>% get_coefs(c("exposure_2cat", "exposure_continuous")) %>% 
   graph_coefs()
 
+#Get model metadata
 models  %>% get_model_meta()
 
+#Catch models that violate the proportional hazards assumption
 models  %>% catch_nonph()
 ```
 
