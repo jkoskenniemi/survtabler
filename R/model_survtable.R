@@ -24,10 +24,21 @@
 
 model_survtable <- function(survtable) {
   
-  model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var),
-                            function(data, formula, exposure_var, outcome_var) {
+  #Add ifelse here that is passed to function below
+    submodels_requested <- ifelse("submodel_var" %in% names(survtable) & "submodel_var" %in% names(survtable), TRUE, FALSE)
+  
+    if(submodels_requested == FALSE) {
+      survtable <- dplyr::mutate(survtable, submodel_var = NA, submodel_value = NA)
+        }
+
+  model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var,
+                                 survtable$submodel_var, survtable$submodel_value),
+                            function(data, formula, exposure_var, outcome_var, submodel_var, submodel_value) {
                               # Construct model names for each model
-                              model_name <- paste0(outcome_var, "~", exposure_var, "|", data)
+                              model_name <- ifelse(submodels_requested, 
+                                                   paste0(outcome_var, "~", exposure_var, "|", 
+                                                          "filter(", data, ",", submodel_var, "==", submodel_value, ")"),
+                                                   paste0(outcome_var, "~", exposure_var, "|", data))
                               
                               # Prepare the data frame
                               data_df <- get(data)
