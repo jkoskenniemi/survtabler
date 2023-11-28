@@ -38,8 +38,7 @@ get_model_meta <- function(model_list) {
     model_name <- attr(model, "model_name")
     
     #Gather information to a data.frame
-    data.frame("model_name" = model_name,
-               "n" = model$n,
+    data.frame("n" = model$n,
                "n_event" = model$nevent,
                "n_missing" = length(model$na.action))
   })
