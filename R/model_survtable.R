@@ -23,6 +23,7 @@
 
 
 model_survtable <- function(survtable) {
+  
   model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var),
                             function(data, formula, exposure_var, outcome_var) {
                               # Construct model names for each model
@@ -43,6 +44,14 @@ model_survtable <- function(survtable) {
                               
                               model
                             })
+  
+  #Rename models
+  names(model_list) <- map(model_list, get_model_name)
+  
   model_list
 }
 
+#Get Model names
+get_model_name <- function(model) {
+  attr(model, "model_name")
+}

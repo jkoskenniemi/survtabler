@@ -34,12 +34,14 @@ get_model_meta <- function(model_list) {
       paste(collapse = "") %>%
       remove_multiple_spaces() #this custom function is defined in this script (at the moment 1.6)
 
+    #Extract model name
+    model_name <- attr(model, "model_name")
+    
     #Gather information to a data.frame
-
-    data.frame("n" = model$n,
+    data.frame("model_name" = model_name,
+               "n" = model$n,
                "n_event" = model$nevent,
-               "n_missing" = length(model$na.action),
-               "formula" = formula)
+               "n_missing" = length(model$na.action))
   })
 
   # Combine all data.frames into one

@@ -30,7 +30,9 @@
 #'   catch_nonph()
 #'
 catch_nonph <- function(model_list) {
-  model_list %>%
+
+  #Catch non-proportional hazards
+    model_list %>%
     purrr::map(survival::cox.zph) %>%
       purrr::map(`[[`, "table") %>% #extract chisq/df/p-value table
       purrr::imap(~ as.data.frame(.) %>%  #turn to data frames and add variable and model names
@@ -38,5 +40,7 @@ catch_nonph <- function(model_list) {
                     model = .y)) %>%
       dplyr::bind_rows() %>% # combine all tables to a data.frame
       dplyr::filter(p < 0.05) %>%  #exlude non-significant
-    dplyr::mutate(dplyr::across(tidyselect::any_of(c("p", "chisq")), ~signif(.x, 3))) # round p and chisq-values
+    dplyr::mutate(dplyr::across(tidyselect::any_of(c("p", "chisq")), ~signif(.x, 3))) # round p and chisq-values 
   }
+
+
