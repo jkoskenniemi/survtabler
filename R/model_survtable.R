@@ -20,25 +20,29 @@
 #' model_survtable()
 #'
 #' @export
-model_survtable <- function(survtable) {
-  model_list <- purrr::pmap(list(survtable$data_name, survtable$formula_str,
-                          survtable$submodel_var, survtable$submodel_value,
-                          survtable$outcome_var, survtable$exposure_var),
-                     function(data, formula_str, submodel_var, submodel_value, outcome_var, exposure_var) {
-                       # Construct model names for each model
-                       model_name <- paste0(outcome_var, "~", exposure_var, "|", data,
-                                            ifelse(!is.null(submodel_var) && !is.null(submodel_value),
-                                                   paste0("(", submodel_var, "==", submodel_value, ")"),
-                                                   ""))
-                       # Run cox ph models
-                       model <- analyze_coxph(data, formula_str, submodel_var, submodel_value)
 
-                       # Save model names as an attribute
-                       attr(model, "model_name") <- model_name
-                       model
-                     })
+
+model_survtable <- function(survtable) {
+  model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var),
+                            function(data, formula, exposure_var, outcome_var) {
+                              # Construct model names for each model
+                              model_name <- paste0(outcome_var, "~", exposure_var, "|", data)
+                              
+                              # Prepare the data frame
+                              data_df <- get(data)
+                              
+                              # Construct and evaluate the formula
+                              cox_formula <- as.formula(formula)
+                              
+                              # Run cox ph models
+                              # model <- analyze_coxph(data_df, cox_formula)
+                              model <- survival::coxph(formula = cox_formula, data = data_df)
+                              
+                              # Save model names as an attribute
+                              attr(model, "model_name") <- model_name
+                              
+                              model
+                            })
   model_list
 }
-
-
 

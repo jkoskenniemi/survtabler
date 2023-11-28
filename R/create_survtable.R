@@ -44,129 +44,132 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                              model_type = "time_invariant",
                              submodel_var = NULL,
                              submodel_values = NULL) {
-  # This function is organized using an if/else tree:
-  # survival model type?
+
+  #Checks for validity of model inputs
+  # check_survtable_input(exposure_vars = exposure_vars, 
+  #                       outcome_vars = outcome_vars, 
+  #                       data_name = data_name, 
+  #                       time_var = time_var,
+  #                       covariates = covariates,
+  #                       model_type = model_type,
+  #                       submodel_var = submodel_var,
+  #                       submodel_values = submodel_values)
+  
+  
+  
+  #Create a data.frame that has the combination of data
+  combinations <- construct_combinations(data_name = data_name, 
+                                         exposure_vars = exposure_vars,
+                                         time_var = time_var,
+                                         outcome_vars = outcome_vars,
+                                         submodel_var = submodel_var,
+                                         submodel_values = submodel_values)
+  # #Filter data 
+  # combinations_data <- add_data_filter(combinations)
+  
+  
+  
+  #Formulate model formula
+  construct_model_formula(df = combinations,
+                          model_type = model_type, 
+                          time_var = time_var, 
+                          outcome_var = outcome_var,
+                          exposure_var = exposure_var,
+                          covariates = covariates)
+  
+}
+
+#UTILITY FUNCTIONS--------------------------------------------------
 
 
-  # //                  1. Checks
-  # //                       |
-  # //      model_type == "time_invariant" #or shorthand "ti"
-  # //        2.T/                     \5.F
-  # // is.na(submodels_vars)    is.na(submodels_vars)
-  # //    3.T/   \4.F              6.T/  \7.F
+check_survtable_input <- function(exposure_vars, outcome_vars, data_name, time_var,
+                                    covariates = NULL,
+                                    model_type = "time_invariant",
+                                    submodel_var = NULL,
+                                    submodel_values = NULL) {
 
-  # Credit to John Regehr for the idea for ASCII art
-  # https://blog.regehr.org/archives/1653
+if (length(covariates) != 1 & !is.null(covariates)) stop("Invalid specification of input 'covariates'. `covariates` should have length of 1. See help(create_survtable)")
+if (!is.character(covariates) & !is.null(covariates)) stop("Invalid specification of input `covariates`. `covariates` should be a character vector with length == 1. See help(create_survtable)")
+if (!is.character(exposure_vars)) stop("Invalid specifcation of input 'exposure_vars'. `exposure_vars` should be a character vector with length >= 1. See help(create_survtable)")
+if (!is.character(outcome_vars)) stop("Invalid specification of input `outcome_vars`. `outcome_vars should be a character vector with length >= 1. See help(create_survtable)")
+if (!is.character(data_name)) stop("Invalid specification of input `data_name`. `data_name` should be a character vector with length >= 1. See help(create_survtable)")
+if (!is.character(time_var)) stop("Invalid specification of input `time_var`. `time_var` should be a character vector with length >= 1. See help(create_survtable)")
 
+if (!is.character(exposure_vars) || any(purrr::map_lgl(exposure_vars, ~ exists(.x)))) {
+  stop("Invalid specification of input 'exposure_vars'. Expecting a character vector. See help(create_survtable)")
+}
+if (!is.character(outcome_vars) || any(purrr::map_lgl(outcome_vars, ~ exists(.x)))) {
+  stop("Invalid specification of input 'outcome_vars'. Expecting a character vector. See help(create_survtable)")
+}
+if (!is.character(time_var) || any(purrr::map_lgl(time_var, ~ exists(.x)))) {
+  stop("Invalid specification of input 'time_var'. Expecting a quoted character vector. Avoid variable_names `time`, `time_var`, or `time_vars`, as they may be environment variables an produce a false error.")
+}
+}
 
+construct_combinations <-
+  function(data_name, exposure_vars, outcome_vars, time_var,
+           submodel_var, submodel_values) {
 
-  # 1 Checks--------------------------------------------------------------------
-  # that covariates, exposure_vars, outcome_vars, data_name and time_var
-  if (length(covariates) != 1 & !is.null(covariates)) stop("Invalid specification of input 'covariates'. `covariates` should have length of 1. See help(create_survtable)")
-  if (!is.character(covariates) & !is.null(covariates)) stop("Invalid specification of input `covariates`. `covariates` should be a character vector with length == 1. See help(create_survtable)")
-  if (!is.character(exposure_vars)) stop("Invalid specifcation of input 'exposure_vars'. `exposure_vars` should be a character vector with length >= 1. See help(create_survtable)")
-  if (!is.character(outcome_vars)) stop("Invalid specification of input `outcome_vars`. `outcome_vars should be a character vector with length >= 1. See help(create_survtable)")
-  if (!is.character(data_name)) stop("Invalid specification of input `data_name`. `data_name` should be a character vector with length >= 1. See help(create_survtable)")
-  if (!is.character(time_var)) stop("Invalid specification of input `time_var`. `time_var` should be a character vector with length >= 1. See help(create_survtable)")
+        if(is.null(submodel_var) && !is.null(submodel_values)) {
+        error(paste0("submodel_var and submodel_value inconsistent: either specify
+                     submodel_var or leave both submodel_var and submodel_value as
+                     NULL."))}
+        if(!is.null(submodel_var) && is.null(submodel_values)) {
+        error(paste0("submodel_var and submodel_value inconsistent: either specify
+                     submodel_value or leave both submodel_var and submodel_value
+                     as NULL."))}
 
-  # Ensure that the user has supplied strings and not unquoted environment variables
+      tidyr::crossing("submodel_var" = submodel_var,
+                      "submodel_value" = submodel_values,
+                      "data_name" = data_name,
+                      "exposure_var" = exposure_vars,
+                      "outcome_var" = outcome_vars,
+                      "time_var" = time_var)
 
-  if (!is.character(exposure_vars) || any(purrr::map_lgl(exposure_vars, ~ exists(.x)))) {
-    stop("Invalid specification of input 'exposure_vars'. Expecting a character vector. See help(create_survtable)")
-  }
-  if (!is.character(outcome_vars) || any(purrr::map_lgl(outcome_vars, ~ exists(.x)))) {
-    stop("Invalid specification of input 'outcome_vars'. Expecting a character vector. See help(create_survtable)")
-  }
-  if (!is.character(time_var) || any(purrr::map_lgl(time_var, ~ exists(.x)))) {
-    stop("Invalid specification of input 'time_var'. Expecting a quoted character vector. Avoid variable_names `time`, `time_var`, or `time_vars`, as they may be environment variables an produce a false error.")
-  }
-
-
-  # if (exists(quote(time_var))) stop("Invalid specification of input 'time_var'. Attempting to call an unquoted environment variable. See help(create_survtable)")
-  if (!model_type %in% c("time_invariant", "ti", "time_varying", "time_variant", "tv")) stop("Input 'model_type' is invalid. See help(create_survtable)")
-
-  # Checks still left to be done:
-  # 3) strings listed in exposure_vars, outcome_vars, submodel_var are variable names in `data_name`
-  # 5) items within the string `covariates` are variable names in `data_name`
-  # 6) submodle_var, submodel_values, covariates are character strings
-  # 7) length of submodel_var is 1
-  # 8) submodel_values are levels of submodel_var
-  # 9) there are no more levels in submodel_values than those specified in submodel_values
-  # 10) either both submodel_var and submodel_values or neither of the two are supplied
-
-
-
-  # 2. The main exposure of interest is time-invariant--------------------------
-  if (model_type %in% c("ti", "time_invariant")) {
-    # 3. subgroup analyses requested--------------------------------------------
-    if (!is.null(submodel_var) & !is.null(submodel_values)) {
-      submodel <- tidyr::crossing("submodel_var" = submodel_var, "submodel_value" = submodel_values)
-      combinations <- tidyr::crossing(
-        "data_name" = data_name, "exposure_var" = exposure_vars,
-        "outcome_var" = outcome_vars, "time_var" = time_var
-      )
-      model_input_table <- tidyr::crossing(submodel, combinations) %>%
-        dplyr::mutate(dplyr::across(tidyselect::everything(), .fns = as.character))
-
-      model_input_table %>%
-        dplyr::mutate(covariates = covariates) %>%
-        dplyr::mutate(formula_str =
-                        paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariates)) %>% 
-        dplyr::mutate(formula_str = stringr::str_remove(formula_str, " \\+ $"))
-        
-      # 4. no subgroup analyses------------------------------------------------
-    } else {
-      combinations <- tidyr::crossing(
-        "data_name" = data_name, "exposure_var" = exposure_vars,
-        "outcome_var" = outcome_vars, "time_var" = time_var
-      )
-      model_input_table <- combinations %>% dplyr::mutate(dplyr::across(tidyselect::everything(), .fns = as.character))
-
-      model_input_table %>%
-        dplyr::mutate(covariates = covariates) %>%
-        dplyr::mutate(formula_str = 
-                        paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", 
-                               exposure_var, " + ", covariates)) %>% 
-        dplyr::mutate(formula_str = stringr::str_remove(formula_str, " \\+ $")) %>%
-        dplyr::mutate(submodel_var = NA, submodel_value = NA)
     }
+    
 
-    # 5. The main exposure of interest is time-varying--------------------------
-  } else if (model_type %in% c("tv", "time_variant", "time_varying")) {
-    # 6. no subgroup analyses---------------------------------------------------
-    if (!is.null(submodel_var) & !is.null(submodel_values)) {
-      submodel <- tidyr::crossing("submodel_var" = submodel_var, "submodel_value" = submodel_values)
-      combinations <- tidyr::crossing(
-        "data_name" = data_name, "exposure_var" = exposure_vars,
-        "outcome_var" = outcome_vars, "time_var" = time_var
-      )
-      model_input_table <- tidyr::crossing(submodel, combinations) %>%
-        dplyr::mutate(dplyr::across(tidyselect::everything(), .fns = as.character))
+# 
+# add_data_filter <- 
+#   function(df) {
+#     
+#     if("submodel_var" %in% names(df) & "submodel_value" %in% names(df)) {
+#       df_data <- dplyr::mutate(df, data = paste0("filter(", .data$data_name,",", 
+#                                                  .data$submodel_var, " == ",  
+#                                                  paste0(.data$submodel_value), ")")) %>%
+#         dplyr::select(-data_name)
+#       } else if(!("submodel_var" %in% names(df)) & !("submodel_value" %in% names(df))) {
+#         df_data <- df %>% dplyr::rename(data = data_name)
+#         } else if(!("submodel_var" %in% names(df)) & "submodel_value" %in% names(df)) {
+#         error("Inconsistent input for submodel_var & submodel_value. 
+#               Please supply both submodel_var & submodel_value or neither of the two.") 
+#           } else if("submodel_var" %in% names(df) & !("submodel_value" %in% names(df))) {
+#           error("Inconsistent input for submodel_var & submodel_value. 
+#                 Please supply both submodel_var & submodel_value or neither of the two.") }
+#     
+#     df_data
+#     
+#   }
 
-      model_input_table %>%
-        dplyr::mutate(covariates = covariates) %>%
-        dplyr::mutate(formula_str = paste0(
-          "Surv(tstart, tstop, ", outcome_var, ") ~ ", exposure_var,
-          " + ", covariates
-        ))
 
-      # 6. subgroup analyses requested------------------------------------------
+
+construct_model_formula <- function(df, model_type, time_var, outcome_var, exposure_var, covariates) {
+ 
+    if(model_type %in% c("ti", "time_invariant")) {
+      df <- dplyr::mutate(df, formula = 
+                            paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariates))
+    } else if(model_type %in% c("tv", "time_variant", "time_varying")) {
+      df <- dplyr::mutate(df, formula = paste0(
+        "Surv(tstart, tstop, ", outcome_var, ") ~ ", exposure_var,
+        " + ", covariates))
     } else {
-      combinations <- tidyr::crossing(
-        "data_name" = data_name, "exposure_var" = exposure_vars,
-        "outcome_var" = outcome_vars, "time_var" = time_var
-      )
-      model_input_table <- combinations %>% dplyr::mutate(dplyr::across(tidyselect::everything(), .fns = as.character))
-
-      model_input_table %>%
-        dplyr::mutate(covariates = covariates) %>%
-        dplyr::mutate(formula_str = paste0(
-          "Surv(tstart, tstop, ", outcome_var, ") ~ ", exposure_var,
-          " + ", covariates
-        )) %>%
-        dplyr::mutate(submodel_var = NA, submodel_value = NA)
+      error("invalid model type")
     }
-  } else {
-    stop("Invalid survival model specification (unclear if the survival model should time varying or time invariant)")
-  }
+  
+    #remove trailing "+" if covariates are NULL
+    df <- dplyr::mutate(df, formula = stringr::str_remove(formula, " \\+ $"))
+    
+    df <- mutate(df, dplyr::across(tidyselect::everything(), .fns = as.character))
+    
+    df
 }

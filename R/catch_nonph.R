@@ -8,6 +8,7 @@
 #' @importFrom purrr map
 #' @importFrom purrr imap
 #' @importFrom survival cox.zph
+#' @importFrom survival Surv
 #' @importFrom dplyr mutate
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr filter

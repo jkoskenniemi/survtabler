@@ -125,7 +125,7 @@ coefficients <- model_outcome1_exposure2cat_hla33_coefs %>%
   full_join(model_outcome2_exposurecont_hla34_coefs) %>% 
   full_join(model_outcome2_exposurecont_hla44_coefs)
   
-# Graph 1
+# Create graph data
 coefficients <- coefficients %>%
   filter(term %in% c("exposure_2cat", "exposure_continuous")) %>% 
     mutate(sig = ifelse(p.value < 0.05, 1, 0)) %>% 
@@ -141,7 +141,8 @@ coefficients <- coefficients %>%
     hla == "hla33" ~ "HLA DR3/3",
     hla == "hla34" ~ "HLA DR3/4",
     hla == "hla44" ~ "HLA DR4/4"))
-  
+
+# Graph
 coefficients %>%
     ggplot(aes(x = term, y = exp(estimate),
                ymin = exp(estimate - 1.96 * std.error),
@@ -165,9 +166,11 @@ coefficients %>%
 
 </details>
 
-Here is how that would be analyzed with survtabler in 15 lines.
+Here is how that would be analyzed with survtabler in 15 lines. 
 
 ```{r eval = FALSE}
+library(survtabler)
+
 #Build a 'survtable' with combinations of survival model data and model formula
 survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
                                 outcome_vars = c("outcome1", "outcome2"),
@@ -191,6 +194,7 @@ models  %>% get_model_meta()
 models  %>% catch_nonph()
 ```
 
+It takes 88% of less lines of code to write and the code is way easier to read. The advantage of using survtabler is way more obvious when we consider that analyses often need to be refined later. It would be much nicer to e.g. tweak the covariates here in one line than in 12.
 
 ## Installation
 
@@ -203,7 +207,7 @@ devtools::install_github("jkoskenniemi/survtabler")
 
 ## Example
 
-A simple example using simulated data. Using imperative programming, the analysis require a lot of repetitive writing of same blocks of code, and would look like this (please suggest if this can be shortened).
+Below, we go through the steps of the earlier example in more detail.
 
 The first step is to plan and specify, which Survival models are analyzed. `create_survtable()` builds a data.frame that includes each combination of primary exposures of interest (specified in input as `expoure_vars`), outcomes (`outcome_vars`), follow-up time (`time_var`) and analysis data (`data`). Optionally, subgroup analyses can be requested by providing the variable and values that that define subgroup analyses (`submodel_var` and `submodel_values`).
 
@@ -217,6 +221,8 @@ survtable_1 <-
                  outcome_vars = c("outcome1", "outcome2"),
                  covariates = "age + sex + hla",
                  time_var = "cens_time",
+                 submodel_var = "hla",
+                 submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
                  data_name = "example_ti")
 ```
 
@@ -224,7 +230,7 @@ survtable_1 <-
 `survtable` includes for each row everything that is needed for survival analyses by `survival::coxph`: data (`data_name`) and model formula (`formula_str`).
 
 ```{r}
-survtable_1 %>% select(data_name, formula_str)
+survtable_1 %>% select(data_name, formula)
 ```
 
 After the `survtable` has been created, in principle the following steps (`model_survtable()`, `get_coefs()`, `graph_coefs()`, `get_model_metadata()`, `catch_nonph()`, can be automated and included in a single function (to be created). However, they are all are shown here to show the entire process.  

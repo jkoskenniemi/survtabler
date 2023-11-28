@@ -129,7 +129,7 @@ coefficients <- model_outcome1_exposure2cat_hla33_coefs %>%
   full_join(model_outcome2_exposurecont_hla34_coefs) %>% 
   full_join(model_outcome2_exposurecont_hla44_coefs)
   
-# Graph 1
+# Create graph data
 coefficients <- coefficients %>%
   filter(term %in% c("exposure_2cat", "exposure_continuous")) %>% 
     mutate(sig = ifelse(p.value < 0.05, 1, 0)) %>% 
@@ -145,7 +145,8 @@ coefficients <- coefficients %>%
     hla == "hla33" ~ "HLA DR3/3",
     hla == "hla34" ~ "HLA DR3/4",
     hla == "hla44" ~ "HLA DR4/4"))
-  
+
+# Graph
 coefficients %>%
     ggplot(aes(x = term, y = exp(estimate),
                ymin = exp(estimate - 1.96 * std.error),
@@ -172,7 +173,9 @@ coefficients %>%
 Here is how that would be analyzed with survtabler in 15 lines.
 
 ``` r
-#Build a `survtable` with combinations of survival model data and model formula
+library(survtabler)
+
+#Build a 'survtable' with combinations of survival model data and model formula
 survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
                                 outcome_vars = c("outcome1", "outcome2"),
                                 covariates = "age + sex + hla",
@@ -195,6 +198,11 @@ models  %>% get_model_meta()
 models  %>% catch_nonph()
 ```
 
+It takes 88% of less lines of code to write and the code is way easier
+to read. The advantage of using survtabler is way more obvious when we
+consider that analyses often need to be refined later. It would be much
+nicer to e.g. tweak the covariates here in one line than in 12.
+
 ## Installation
 
 You can install the development version of `survtabler` from
@@ -207,9 +215,7 @@ devtools::install_github("jkoskenniemi/survtabler")
 
 ## Example
 
-A simple example using simulated data. Using imperative programming, the
-analysis require a lot of repetitive writing of same blocks of code, and
-would look like this (please suggest if this can be shortened).
+Below, we go through the steps of the earlier example in more detail.
 
 The first step is to plan and specify, which Survival models are
 analyzed. `create_survtable()` builds a data.frame that includes each
@@ -237,6 +243,8 @@ survtable_1 <-
                  outcome_vars = c("outcome1", "outcome2"),
                  covariates = "age + sex + hla",
                  time_var = "cens_time",
+                 submodel_var = "hla",
+                 submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
                  data_name = "example_ti")
 ```
 
@@ -245,14 +253,22 @@ analyses by `survival::coxph`: data (`data_name`) and model formula
 (`formula_str`).
 
 ``` r
-survtable_1 %>% select(data_name, formula_str)
-#> # A tibble: 4 x 2
-#>   data_name  formula_str                                                      
-#>   <chr>      <chr>                                                            
-#> 1 example_ti Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla      
-#> 2 example_ti Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla      
-#> 3 example_ti Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
-#> 4 example_ti Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+survtable_1 %>% select(data_name, formula)
+#> # A tibble: 12 x 2
+#>    data_name  formula                                                          
+#>    <chr>      <chr>                                                            
+#>  1 example_ti Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla      
+#>  2 example_ti Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla      
+#>  3 example_ti Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#>  4 example_ti Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+#>  5 example_ti Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla      
+#>  6 example_ti Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla      
+#>  7 example_ti Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#>  8 example_ti Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+#>  9 example_ti Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla      
+#> 10 example_ti Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla      
+#> 11 example_ti Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#> 12 example_ti Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
 ```
 
 After the `survtable` has been created, in principle the following steps
@@ -283,16 +299,32 @@ models  %>%
 ``` r
 models  %>%  
   get_model_meta()
-#>      n n_event n_missing
-#> 1 8000    3996         0
-#> 2 8000    3990         0
-#> 3 8000    3996         0
-#> 4 8000    3990         0
-#>                                                                       formula
-#> 1       survival::Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
-#> 2       survival::Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
-#> 3 survival::Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
-#> 4 survival::Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+#>       n n_event n_missing
+#> 1  8000    3996         0
+#> 2  8000    3990         0
+#> 3  8000    3996         0
+#> 4  8000    3990         0
+#> 5  8000    3996         0
+#> 6  8000    3990         0
+#> 7  8000    3996         0
+#> 8  8000    3990         0
+#> 9  8000    3996         0
+#> 10 8000    3990         0
+#> 11 8000    3996         0
+#> 12 8000    3990         0
+#>                                                              formula
+#> 1        Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
+#> 2        Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
+#> 3  Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#> 4  Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+#> 5        Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
+#> 6        Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
+#> 7  Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#> 8  Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+#> 9        Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
+#> 10       Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
+#> 11 Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
+#> 12 Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
 ```
 
 … and finally models that violate proportionality of the hazards
