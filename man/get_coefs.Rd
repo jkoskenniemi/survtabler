@@ -4,12 +4,12 @@
 \alias{get_coefs}
 \title{Get Coefficients of Interest in Models}
 \usage{
-get_coefs(model_list, select_terms)
+get_coefs(model_list, select_exposures = NULL, select_terms = NULL)
 }
 \arguments{
 \item{model_list}{A list of Cox Proportional Hazards Models.}
 
-\item{select_terms}{A character vector of terms (typically the same as exposure_vars in create_survtable).}
+\item{select_terms, select_exposures}{An optional character vector of terms, since get_coef() now by default recognizes the 'exopsures' value used in create_survtable(). Defaults to NULL.}
 }
 \value{
 A data.frame that includes model coefficients.

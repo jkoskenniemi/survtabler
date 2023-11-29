@@ -19,6 +19,31 @@ helper_test_survtable <- function(exposure_vars = c("exposure_2cat", "exposure_c
 }
 
 
+
+survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
+                                outcome_vars = c("outcome1", "outcome2"),
+                                covariates = "age + sex + hla",
+                                time_var = "cens_time",
+                                data_name = "example_ti")
+
+survtable_2 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
+                                outcome_vars = c("outcome1", "outcome2"),
+                                covariates = "age + sex + hla",
+                                submodel_var = "hla",
+                                submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
+                                time_var = "cens_time",
+                                data_name = "example_ti")
+
+models_1 <- model_survtable(survtable_1)
+models_2 <- model_survtable(survtable_2)
+
+coefs_1 <- get_coefs(models_1)
+coefs_2 <- get_coefs(models_2)
+
+model_meta_1 <- get_model_meta(models_1)
+model_meta_2 <- get_model_meta(models_2)
+
+
 helper_test_survtable()
 
 
