@@ -51,7 +51,12 @@ model_survtable <- function(survtable) {
                               model <- survival::coxph(formula = cox_formula, data = data_df)
                               
                               # Save model names as an attribute
-                              attr(model, "model_name") <- model_name
+                              attr(model, "model_name")    <- model_name
+                              attr(model, "exposure")      <- exposure_var
+                              attr(model, "outcome")       <- outcome_var
+                              attr(model, "data")          <- data
+                              attr(model, "submodel_var")  <- submodel_var
+                              attr(model, "submodel_value") <- submodel_value
                               
                               model
                             })
