@@ -35,12 +35,19 @@ get_model_meta <- function(model_list) {
       remove_multiple_spaces() #this custom function is defined in this script (at the moment 1.6)
 
     #Extract model name
-    model_name <- attr(model, "model_name")
+    attr_model_name     <- attr(model, "model_name")
+    attr_exposure_var   <- attr(model, "exposure")
+    attr_outcome_var    <- attr(model, "outcome") 
+    attr_data           <- attr(model, "data")
+    attr_submodel_value <- attr(model, "submodel_value")  
+    attr_submodel_var   <- attr(model, "submodel_var")
     
     #Gather information to a data.frame
     data.frame("n" = model$n,
                "n_event" = model$nevent,
-               "n_missing" = length(model$na.action))
+               "n_missing" = length(model$na.action),
+               "data" = attr_data,
+               "submodel" = ifelse(is.na(attr_submodel_var), NA, paste0(attr_submodel_var, "==",attr_submodel_value)))
   })
 
   # Combine all data.frames into one
