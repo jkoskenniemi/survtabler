@@ -166,7 +166,8 @@ coefficients %>%
 
 </details>
 
-Here is how that would be analyzed with survtabler in 15 lines. 
+<details>
+<summary> Here is how that would be analyzed with survtabler in 15 lines (analyzed in detail below). </summary> --> 
 
 ```{r eval = FALSE}
 library(survtabler)
@@ -184,7 +185,7 @@ survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_con
 models <- survtable_1 %>% model_survtable()
 
 #Extract coefficients and graph a forrest plot
-models %>% get_coefs(c("exposure_2cat", "exposure_continuous")) %>% 
+models %>% get_coefs() %>% 
   graph_coefs()
 
 #Get model metadata
@@ -193,8 +194,9 @@ models  %>% get_model_meta()
 #Catch models that violate the proportional hazards assumption
 models  %>% catch_nonph()
 ```
+</details>
 
-It takes 88% of less lines of code to write and the code is way easier to read. The advantage of using survtabler is way more obvious when we consider that analyses often need to be refined later. It would be much nicer to e.g. tweak the covariates here in one line than in 12.
+Survtabler way takes 88% of less lines of code to write and the code is way easier to read. The advantage of using survtabler is way more obvious when number of model combinations increases to dozens, hundreds oreven thousands. Furthermore, survtabler function-based scripts are easier to work with when analyses often need to be refined later. It would be much nicer to e.g. tweak the covariates here in one line than in possibly dozens.
 
 ## Installation
 
@@ -245,7 +247,7 @@ models <- survtable_1 %>%
 And then model coefficients are extracted and a forest plot drawn, ...
 ```{r}
 models  %>%  
-  get_coefs(c("exposure_2cat", "exposure_continuous"))  %>%  #Get coefficients for forrest plots
+  get_coefs()  %>%  #Get coefficients for forrest plots
   graph_coefs(title = "**Your title here**") #Draw forest plots
 ```
 
@@ -260,4 +262,6 @@ models  %>%
 models  %>%  
   catch_nonph()
 ```
+
+
 

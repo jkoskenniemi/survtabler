@@ -169,8 +169,13 @@ coefficients %>%
 ```
 
 </details>
+<details>
+<summary>
+Here is how that would be analyzed with survtabler in 15 lines (analyzed
+in detail below).
+</summary>
 
-Here is how that would be analyzed with survtabler in 15 lines.
+–\>
 
 ``` r
 library(survtabler)
@@ -188,7 +193,7 @@ survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_con
 models <- survtable_1 %>% model_survtable()
 
 #Extract coefficients and graph a forrest plot
-models %>% get_coefs(c("exposure_2cat", "exposure_continuous")) %>% 
+models %>% get_coefs() %>% 
   graph_coefs()
 
 #Get model metadata
@@ -198,10 +203,15 @@ models  %>% get_model_meta()
 models  %>% catch_nonph()
 ```
 
-It takes 88% of less lines of code to write and the code is way easier
-to read. The advantage of using survtabler is way more obvious when we
-consider that analyses often need to be refined later. It would be much
-nicer to e.g. tweak the covariates here in one line than in 12.
+</details>
+
+Survtabler way takes 88% of less lines of code to write and the code is
+way easier to read. The advantage of using survtabler is way more
+obvious when number of model combinations increases to dozens, hundreds
+oreven thousands. Furthermore, survtabler function-based scripts are
+easier to work with when analyses often need to be refined later. It
+would be much nicer to e.g. tweak the covariates here in one line than
+in possibly dozens.
 
 ## Installation
 
@@ -288,7 +298,7 @@ And then model coefficients are extracted and a forest plot drawn, …
 
 ``` r
 models  %>%  
-  get_coefs(c("exposure_2cat", "exposure_continuous"))  %>%  #Get coefficients for forrest plots
+  get_coefs()  %>%  #Get coefficients for forrest plots
   graph_coefs(title = "**Your title here**") #Draw forest plots
 ```
 
@@ -299,32 +309,45 @@ models  %>%
 ``` r
 models  %>%  
   get_model_meta()
-#>       n n_event n_missing
-#> 1  8000    3996         0
-#> 2  8000    3990         0
-#> 3  8000    3996         0
-#> 4  8000    3990         0
-#> 5  8000    3996         0
-#> 6  8000    3990         0
-#> 7  8000    3996         0
-#> 8  8000    3990         0
-#> 9  8000    3996         0
-#> 10 8000    3990         0
-#> 11 8000    3996         0
-#> 12 8000    3990         0
-#>                                                              formula
-#> 1        Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
-#> 2        Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
-#> 3  Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
-#> 4  Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
-#> 5        Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
-#> 6        Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
-#> 7  Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
-#> 8  Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
-#> 9        Surv(cens_time, outcome1) ~ exposure_2cat + age + sex + hla
-#> 10       Surv(cens_time, outcome2) ~ exposure_2cat + age + sex + hla
-#> 11 Surv(cens_time, outcome1) ~ exposure_continuous + age + sex + hla
-#> 12 Surv(cens_time, outcome2) ~ exposure_continuous + age + sex + hla
+#>                                                               n n_event
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR3/3)       8000    3996
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR3/3)       8000    3990
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR3/3) 8000    3996
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR3/3) 8000    3990
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR3/4)       8000    3996
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR3/4)       8000    3990
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR3/4) 8000    3996
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR3/4) 8000    3990
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR4/4)       8000    3996
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR4/4)       8000    3990
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR4/4) 8000    3996
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR4/4) 8000    3990
+#>                                                            n_missing       data
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR3/3)               0 example_ti
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR3/3)               0 example_ti
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR3/3)         0 example_ti
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR3/3)         0 example_ti
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR3/4)               0 example_ti
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR3/4)               0 example_ti
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR3/4)         0 example_ti
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR3/4)         0 example_ti
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR4/4)               0 example_ti
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR4/4)               0 example_ti
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR4/4)         0 example_ti
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR4/4)         0 example_ti
+#>                                                              submodel
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR3/3)       hla==DR3/3
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR3/3)       hla==DR3/3
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR3/3) hla==DR3/3
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR3/3) hla==DR3/3
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR3/4)       hla==DR3/4
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR3/4)       hla==DR3/4
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR3/4) hla==DR3/4
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR3/4) hla==DR3/4
+#> outcome1~exposure_2cat|filter(example_ti,hla==DR4/4)       hla==DR4/4
+#> outcome2~exposure_2cat|filter(example_ti,hla==DR4/4)       hla==DR4/4
+#> outcome1~exposure_continuous|filter(example_ti,hla==DR4/4) hla==DR4/4
+#> outcome2~exposure_continuous|filter(example_ti,hla==DR4/4) hla==DR4/4
 ```
 
 … and finally models that violate proportionality of the hazards
