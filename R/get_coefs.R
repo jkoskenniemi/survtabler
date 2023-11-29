@@ -28,15 +28,24 @@
 
 get_coefs <- function(model_list, select_terms) {
   models_tidy <- purrr::map_df(model_list, function(model) {
-    model_name <- attr(model, "model_name")  # Retrieve the model name from the attribute
+    
+    # Retrieve metadata
+    attr_model_name     <- attr(model, "model_name")
+    attr_exposure_var   <- attr(model, "exposure")
+    attr_outcome_var    <- attr(model, "outcome") 
+    attr_data           <- attr(model, "data")
+    attr_submodel_value <- attr(model, "submodel_value")  
+    attr_submodel_var   <- attr(model, "submodel_var")
+    
+    #capture model data
     tidy_data <- broom::tidy(model) %>%
       dplyr::filter(term %in% select_terms) %>%
-      dplyr::mutate(model_name = model_name)  %>%
-      dplyr::mutate(data = stringr::str_extract(model_name, "(?<=\\|)[^(]*(?=\\()"),
-             exposure = stringr::str_extract(model_name, "(?<=~)[^|]*(?=\\|)"),
-             outcome = stringr::str_extract(model_name, "^[^~]*"),
-             submodel_var = stringr::str_extract(model_name, "(?<=\\()[^=]*(?==)"),
-             submodel_value = stringr::str_extract(model_name, "(?<=\\={2})[^=)]*(?=\\))"))
+      dplyr::mutate(model_name = attr_model_name)  %>%
+      dplyr::mutate(data = attr_data,
+             exposure =attr_exposure_var,
+             outcome = attr_outcome_var,
+             submodel_var = attr_submodel_var,
+             submodel_value = attr_submodel_value)
     return(tidy_data)
   })
 
