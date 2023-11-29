@@ -3,7 +3,7 @@
 #' Get Coefficients of Interest in Models
 #'
 #' @param model_list A list of Cox Proportional Hazards Models.
-#' @param select_terms A character vector of terms (typically the same as exposure_vars in create_survtable).
+#' @param select_terms,select_exposures An optional character vector of terms, since get_coef() now by default recognizes the 'exopsures' value used in create_survtable(). Defaults to NULL.
 #'
 #' @return A data.frame that includes model coefficients.
 #' @examples
@@ -26,8 +26,17 @@
 #' @export
 
 
-get_coefs <- function(model_list, select_terms) {
+get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) {
   models_tidy <- purrr::map_df(model_list, function(model) {
+    
+    if(!is.null(select_terms)) {
+      message("Update 0.0.1 made select_terms optional. get_coefs() finds all exposures specified during create_survtable(). please change select_terms to select_exposures.")
+      select_exposures <- select_terms
+    }
+    
+    if(is.null(select_exposures)) {
+      select_exposures <- map(model_list, get_exposures)
+    }
     
     # Retrieve metadata
     attr_model_name     <- attr(model, "model_name")
@@ -39,7 +48,7 @@ get_coefs <- function(model_list, select_terms) {
     
     #capture model data
     tidy_data <- broom::tidy(model) %>%
-      dplyr::filter(term %in% select_terms) %>%
+      dplyr::filter(term %in% select_exposures) %>%
       dplyr::mutate(model_name = attr_model_name)  %>%
       dplyr::mutate(data = attr_data,
              exposure =attr_exposure_var,
@@ -51,3 +60,12 @@ get_coefs <- function(model_list, select_terms) {
 
   models_tidy
 }
+
+
+
+
+get_exposures <- function(model_list) {
+  attr(model_list, "exposure")
+}  
+
+
