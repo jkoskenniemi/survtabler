@@ -46,7 +46,8 @@ graph_coefs <- function(data, title) {
 
   graph_data <- graph_data %>%
     dplyr::mutate(sig = factor(sig, levels = c(0, 1),
-                        labels = c("p>=0.05", "p<0.05")))
+                        labels = c("p>=0.05", "p<0.05"))) %>% 
+    dplyr::mutate(graph_facet = ifelse(is.na(submodel_value), paste0(outcome), paste0(outcome, ":", submodel_value)))
   graph_data %>%
     ggplot2::ggplot(ggplot2::aes(x = term, y = exp(estimate),
                ymin = exp(estimate - 1.96 * std.error),
@@ -65,5 +66,5 @@ graph_coefs <- function(data, title) {
     ggplot2::theme(legend.position = "none") +
     ggplot2::ggtitle({{ title }}) +
     ggplot2::scale_y_continuous(trans = "log", labels = scales::label_number(max_n = 2)) +
-    ggplot2::facet_wrap(~outcome)
+    ggplot2::facet_wrap(~factor(graph_facet))
 }
