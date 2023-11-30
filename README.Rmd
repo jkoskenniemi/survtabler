@@ -20,10 +20,9 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`survival` package in R is great for interactively and flexibly running survival models and evaluate the resulting model. However, it does not "teach" any structure for an efficient workflow, and often leads to imperative programming and long and complicated analysis scripts. The aim of `survtabler` is to make survival analysis fast, concise, and intuitive while keeping the analysis code easy to read. This is achieved by *function-based* workflow, where many typical steps (modeling, graphing, analyses of violations of proportional hazards model) are automated with functions.
+`survival` package in R is great for interactively and flexibly running survival models. However, it does not teach a structure for an efficient workflow. The aim of `survtabler` is to make survival analysis fast, concise, and intuitive, while keeping the analysis code easy to read. This is achieved by *function-based* workflow, where many typical steps (modeling, graphing, analyses of violations of proportional hazards model) are automated with functions.
 
-
-## Motivation & example
+## Motivation
 
 Let `example_ti` be a simulated survival data.frame with 8,000 individuals who either experienced an outcome 1 or 2. An analyst would be interested on an association between exposures `exposure_2cat` and `exposure_continuous` on two different outcomes (`outcome1` and `outcome2` - for simplicity here the censoring_time for both of them is the same). Associations should be adjusted for age (`age`) and HLA DR-DQ genotype (`hla`) unless models are run only in subgroups defined by the HLA genotype (DR3/4, DR3/3, and DR4/4). 
 
@@ -196,7 +195,7 @@ models  %>% catch_nonph()
 ```
 </details>
 
-Survtabler way takes 88% of less lines of code to write and the code is way easier to read. The advantage of using survtabler is way more obvious when number of model combinations increases to dozens, hundreds oreven thousands. Furthermore, survtabler function-based scripts are easier to work with when analyses often need to be refined later. It would be much nicer to e.g. tweak the covariates here in one line than in possibly dozens.
+The 'survtabler way' takes 88% of less lines of code to write and the code is way easier to read. The advantage of using survtabler is way more obvious when the number of model combinations increases to dozens, hundreds or even thousands. Furthermore, survtabler function-based scripts are easier to work with when analyses often need to be refined later. It would be much nicer to e.g. tweak the covariates here in one line than in possibly dozens.
 
 ## Installation
 
@@ -211,7 +210,9 @@ devtools::install_github("jkoskenniemi/survtabler")
 
 Below, we go through the steps of the earlier example in more detail.
 
-The first step is to plan and specify, which Survival models are analyzed. `create_survtable()` builds a data.frame that includes each combination of primary exposures of interest (specified in input as `expoure_vars`), outcomes (`outcome_vars`), follow-up time (`time_var`) and analysis data (`data`). Optionally, subgroup analyses can be requested by providing the variable and values that that define subgroup analyses (`submodel_var` and `submodel_values`).
+The first step is to plan and specify the Survival models that are analyzed. `create_survtable()` builds a `survtable`, a  'recipe' data.frame for survival analyses. Each row specifies everything that is required by `Survival::coxph()` to run one of the desired Cox Proportional hazards model: a model formula (`formula`) and analysis data (`data_name`).  
+
+`survtable` is built by specifying the helper function `create_survtable` the requested exposures (input `expoure_vars`), outcomes (`outcome_vars`), follow-up time (`time_var`) and analysis data (`data`). `create_survtable()` then builds all possible combinations of exposure-outcome-time-data. Optionally, subgroup analyses can be requested by providing the variable and values (`submodel_var` and `submodel_values`) that that define subgroup analysis dataset (i.e. `submodel_var`==`submodel_value1`, `submodel_var`==`submodel_value2`, `submodel_var`==`submodel_value3` etc.).
 
 ```{r}
 library(survtabler)
@@ -229,7 +230,6 @@ survtable_1 <-
 ```
 
 
-`survtable` includes for each row everything that is needed for survival analyses by `survival::coxph`: data (`data_name`) and model formula (`formula_str`).
 
 ```{r}
 survtable_1 %>% select(data_name, formula)
