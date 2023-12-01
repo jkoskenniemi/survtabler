@@ -19,6 +19,7 @@ helper_test_survtable <- function(exposure_vars = c("exposure_2cat", "exposure_c
 }
 
 
+default_covariates <- "age + sex + hla"
 
 survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
                                 outcome_vars = c("outcome1", "outcome2"),

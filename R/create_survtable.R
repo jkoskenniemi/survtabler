@@ -10,7 +10,7 @@
 #'   target data_name frame whereas `data_name` refers to a data_name.frame in the R
 #'   environment.
 #' @param covariates Input string with length 1 specifying other variables that
-#'   are adjusted for. Defaults to NULL.
+#'   are adjusted for. Defaults to default_covariates, an external vector.
 #' @param model_type Input string specifying whether the model type is
 #'   time_var-invariant ("ti" or "time_var_invariant) or time_var-varying ("tv" or
 #'   "time_var_varying"). Defaults to "time_var_invariant"
@@ -40,7 +40,7 @@
 #'
 #' @export
 create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
-                             covariates = NULL,
+                             covariates = default_covariates,
                              model_type = "time_invariant",
                              submodel_var = NULL,
                              submodel_values = NULL) {
@@ -55,6 +55,7 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
   #                       submodel_var = submodel_var,
   #                       submodel_values = submodel_values)
   
+  if(!exists("default_covariates")) default_covariates <- NULL
   
   
   #Create a data.frame that has the combination of data
