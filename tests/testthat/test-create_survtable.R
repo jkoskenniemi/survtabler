@@ -29,7 +29,7 @@ survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_con
 
 survtable_2 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
                                 outcome_vars = c("outcome1", "outcome2"),
-                                covariates = "age + sex + hla",
+                                covariates = "age + sex",
                                 submodel_var = "hla",
                                 submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
                                 time_var = "cens_time",
@@ -44,8 +44,12 @@ coefs_2 <- get_coefs(models_2)
 model_meta_1 <- get_model_meta(models_1)
 model_meta_2 <- get_model_meta(models_2)
 
+coefs_1 %>% 
+  graph_coefs("title")
 
-helper_test_survtable()
+coefs_2 %>% 
+  graph_coefs("title")
+
 
 
 # 3
