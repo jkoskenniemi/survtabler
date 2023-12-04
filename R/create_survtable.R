@@ -10,7 +10,8 @@
 #'   target data_name frame whereas `data_name` refers to a data_name.frame in the R
 #'   environment.
 #' @param covariates Input string with length 1 specifying other variables that
-#'   are adjusted for. Defaults to default_covariates, an external vector.
+#'   are adjusted for. Defaults to default_covariates, an external vector (it is set NULL
+#'   if no object default_covariates is found)
 #' @param model_type Input string specifying whether the model type is
 #'   time_var-invariant ("ti" or "time_var_invariant) or time_var-varying ("tv" or
 #'   "time_var_varying"). Defaults to "time_var_invariant"
