@@ -7,8 +7,11 @@
 #' @return A list of survival models with legnth of the number of rows in input data.frame.
 
 #' @importFrom magrittr %>%
+#' @importFrom rlang sym
+#' @importFrom rlang !!
 #' @importFrom purrr pmap
-#'
+#' @importFrom stats as.formula
+#' @importFrom stats formula
 #' @examples
 #'
 #' create_survtable(
@@ -31,14 +34,14 @@ model_survtable <- function(survtable) {
       survtable <- dplyr::mutate(survtable, submodel_var = NA, submodel_value = NA)
     }
     
-    model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var,
+     model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var,
                                  survtable$submodel_var, survtable$submodel_value),
                             function(data_name, formula, exposure_var, outcome_var, submodel_var, submodel_value) {
                               
                               # Construct model names for each model
                               model_name <- ifelse(submodels_requested, 
                                                    paste0(outcome_var, "~", exposure_var, "|", 
-                                                          "filter(", data_name, ",", submodel_var, "==", submodel_value, ")"),
+                                                          data_name, ",", submodel_var, "==", submodel_value),
                                                    paste0(outcome_var, "~", exposure_var, "|", data_name))
                               
 
@@ -50,7 +53,7 @@ model_survtable <- function(survtable) {
                               
                               
                               # Construct and evaluate the formula
-                              cox_formula <- as.formula(formula)
+                              cox_formula <- stats::as.formula(formula)
                               # Run cox ph models
                               # model <- analyze_coxph(data_df, cox_formula)
                               model <- survival::coxph(formula = cox_formula, data = data_df)

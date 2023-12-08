@@ -3,7 +3,7 @@
 #' Simulated dataset for survival analyses with a time-invariant exposure of interest
 #'
 #' @format ## `example_ti`
-#' A data frame with 8,000 rows and 9 columns:
+#' A data frame with 12,000 rows and 9 columns:
 #' \describe{
 #'   \item{id}{A subject-specific identifier}
 #'   \item{cens_time}{Time-to-event}

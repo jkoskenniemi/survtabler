@@ -2,7 +2,7 @@
 set.seed(123) # For reproducibility
 
 # Parameters
-num_subjects <- 8000
+num_subjects <- 12000
 max_records_per_subject <- 3 # Maximum number of time periods per subject
 
 # Simulate data
@@ -24,7 +24,5 @@ example_tv <- do.call(rbind, lapply(1:num_subjects, function(i) {
 }))
 
 head(example_tv)
-
-
 
 usethis::use_data(example_tv, overwrite = TRUE)

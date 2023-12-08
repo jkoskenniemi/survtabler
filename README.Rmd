@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 
 ## Motivation
 
-Let `example_ti` be a simulated survival data.frame with 8,000 individuals who either experienced an outcome 1 or 2. An analyst would be interested on an association between exposures `exposure_2cat` and `exposure_continuous` on two different outcomes (`outcome1` and `outcome2` - for simplicity here the censoring_time for both of them is the same). Associations should be adjusted for age (`age`) and HLA DR-DQ genotype (`hla`) unless models are run only in subgroups defined by the HLA genotype (DR3/4, DR3/3, and DR4/4). 
+Let `example_ti` be a simulated survival data.frame with 8,000 individuals who either experienced an outcome 1 or 2. An analyst would be interested on an association between exposures `exposure_2cat` and `exposure_continuous` on two different outcomes (`outcome1` and `outcome2` - for simplicity here the censoring_time for both of them is the same). Associations should be adjusted for age (`age`) and HLA DR-DQ genotype (`hla`) unless models are run only in subgroups defined by the HLA genotype (Type 2, Type 1, and Type 3). 
 
 <details>
 <summary> Here is a typical imperative script that analyzes the data in 129 lines </summary> -->
@@ -39,90 +39,90 @@ library(ggplot2)
 library(scales)
 
 # Create subgroups used in analyses
-example_ti_hla33 <- example_ti %>% filter(hla == "DR3/3") 
-example_ti_hla34 <- example_ti %>% filter(hla == "DR3/4") 
-example_ti_hla44 <- example_ti %>% filter(hla == "DR4/4") 
+example_ti_hla1 <- example_ti %>% filter(hla == "Type 1") 
+example_ti_hla2 <- example_ti %>% filter(hla == "Type 2") 
+example_ti_hla3 <- example_ti %>% filter(hla == "Type 3") 
 
 # Make models
-model_outcome1_exposure2cat_hla33 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_2cat + age + sex, data = example_ti_hla33)
-model_outcome1_exposure2cat_hla34 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_2cat + age + sex, data = example_ti_hla34)
-model_outcome1_exposure2cat_hla44 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_2cat + age + sex, data = example_ti_hla44)
-model_outcome1_exposurecont_hla33 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_continuous + age + sex, data = example_ti_hla33)
-model_outcome1_exposurecont_hla34 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_continuous + age + sex, data = example_ti_hla34)
-model_outcome1_exposurecont_hla44 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_continuous + age + sex, data = example_ti_hla44)
-model_outcome2_exposure2cat_hla33 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_2cat + age + sex, data = example_ti_hla33)
-model_outcome2_exposure2cat_hla34 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_2cat + age + sex, data = example_ti_hla34)
-model_outcome2_exposure2cat_hla44 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_2cat + age + sex, data = example_ti_hla44)
-model_outcome2_exposurecont_hla33 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_continuous + age + sex, data = example_ti_hla33)
-model_outcome2_exposurecont_hla34 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_continuous + age + sex, data = example_ti_hla34)
-model_outcome2_exposurecont_hla44 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_continuous + age + sex, data = example_ti_hla44)
+model_outcome1_exposure2cat_hla1 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_2cat + age + sex, data = example_ti_hla1)
+model_outcome1_exposure2cat_hla2 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_2cat + age + sex, data = example_ti_hla2)
+model_outcome1_exposure2cat_hla3 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_2cat + age + sex, data = example_ti_hla3)
+model_outcome1_exposurecont_hla1 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_continuous + age + sex, data = example_ti_hla1)
+model_outcome1_exposurecont_hla2 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_continuous + age + sex, data = example_ti_hla2)
+model_outcome1_exposurecont_hla3 <- coxph(formula = Surv(cens_time, outcome1) ~ exposure_continuous + age + sex, data = example_ti_hla3)
+model_outcome2_exposure2cat_hla1 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_2cat + age + sex, data = example_ti_hla1)
+model_outcome2_exposure2cat_hla2 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_2cat + age + sex, data = example_ti_hla2)
+model_outcome2_exposure2cat_hla3 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_2cat + age + sex, data = example_ti_hla3)
+model_outcome2_exposurecont_hla1 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_continuous + age + sex, data = example_ti_hla1)
+model_outcome2_exposurecont_hla2 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_continuous + age + sex, data = example_ti_hla2)
+model_outcome2_exposurecont_hla3 <- coxph(formula = Surv(cens_time, outcome2) ~ exposure_continuous + age + sex, data = example_ti_hla3)
 
 #assess models
-model_outcome1_exposure2cat_hla33
-model_outcome1_exposure2cat_hla34
-model_outcome1_exposure2cat_hla44
-model_outcome1_exposurecont_hla33
-model_outcome1_exposurecont_hla34
-model_outcome1_exposurecont_hla44
-model_outcome2_exposure2cat_hla33
-model_outcome2_exposure2cat_hla34
-model_outcome2_exposure2cat_hla44
-model_outcome2_exposurecont_hla33
-model_outcome2_exposurecont_hla34
-model_outcome2_exposurecont_hla44
+model_outcome1_exposure2cat_hla1
+model_outcome1_exposure2cat_hla2
+model_outcome1_exposure2cat_hla3
+model_outcome1_exposurecont_hla1
+model_outcome1_exposurecont_hla2
+model_outcome1_exposurecont_hla3
+model_outcome2_exposure2cat_hla1
+model_outcome2_exposure2cat_hla2
+model_outcome2_exposure2cat_hla3
+model_outcome2_exposurecont_hla1
+model_outcome2_exposurecont_hla2
+model_outcome2_exposurecont_hla3
 
 # Analyze proportional hazards assumptions
-cox.zph(model_outcome1_exposure2cat_hla33)
-cox.zph(model_outcome1_exposure2cat_hla34)
-cox.zph(model_outcome1_exposure2cat_hla44)
-cox.zph(model_outcome1_exposurecont_hla33)
-cox.zph(model_outcome1_exposurecont_hla34)
-cox.zph(model_outcome2_exposure2cat_hla33)
-cox.zph(model_outcome2_exposure2cat_hla34)
-cox.zph(model_outcome2_exposure2cat_hla44)
-cox.zph(model_outcome2_exposurecont_hla33)
-cox.zph(model_outcome2_exposurecont_hla34)
-cox.zph(model_outcome2_exposurecont_hla44)
+cox.zph(model_outcome1_exposure2cat_hla1)
+cox.zph(model_outcome1_exposure2cat_hla2)
+cox.zph(model_outcome1_exposure2cat_hla3)
+cox.zph(model_outcome1_exposurecont_hla1)
+cox.zph(model_outcome1_exposurecont_hla2)
+cox.zph(model_outcome2_exposure2cat_hla1)
+cox.zph(model_outcome2_exposure2cat_hla2)
+cox.zph(model_outcome2_exposure2cat_hla3)
+cox.zph(model_outcome2_exposurecont_hla1)
+cox.zph(model_outcome2_exposurecont_hla2)
+cox.zph(model_outcome2_exposurecont_hla3)
 
 # Extract Coefficients
-model_outcome1_exposure2cat_hla33_coefs <- tidy(model_outcome1_exposure2cat_hla33) %>% 
-  mutate(model = "outcome1_exposure2cat_hla33_coefs")
-model_outcome1_exposure2cat_hla34_coefs <- tidy(model_outcome1_exposure2cat_hla34) %>% 
-  mutate(model = "outcome1_exposure2cat_hla34_coefs")
-model_outcome1_exposure2cat_hla44_coefs <- tidy(model_outcome1_exposure2cat_hla44) %>% 
-  mutate(model = "outcome1_exposure2cat_hla44_coefs")
-model_outcome1_exposurecont_hla33_coefs <- tidy(model_outcome1_exposurecont_hla33) %>% 
-  mutate(model = "outcome1_exposurecont_hla33_coefs")
-model_outcome1_exposurecont_hla34_coefs <- tidy(model_outcome1_exposurecont_hla34) %>% 
-  mutate(model = "outcome1_exposurecont_hla34_coefs")
-model_outcome1_exposurecont_hla44_coefs <- tidy(model_outcome1_exposurecont_hla44) %>% 
-  mutate(model = "outcome1_exposurecont_hla44_coefs")
-model_outcome2_exposure2cat_hla33_coefs <- tidy(model_outcome2_exposure2cat_hla33) %>% 
-  mutate(model = "outcome2_exposure2cat_hla33_coefs")
-model_outcome2_exposure2cat_hla34_coefs <- tidy(model_outcome2_exposure2cat_hla34) %>% 
-  mutate(model = "outcome2_exposure2cat_hla34_coefs")
-model_outcome2_exposure2cat_hla44_coefs <- tidy(model_outcome2_exposure2cat_hla44) %>% 
-  mutate(model = "outcome2_exposure2cat_hla44_coefs")
-model_outcome2_exposurecont_hla33_coefs <- tidy(model_outcome2_exposurecont_hla33) %>% 
-  mutate(model = "outcome2_exposurecont_hla33_coefs")
-model_outcome2_exposurecont_hla34_coefs <- tidy(model_outcome2_exposurecont_hla34) %>% 
-  mutate(model = "outcome2_exposurecont_hla34_coefs")
-model_outcome2_exposurecont_hla44_coefs <- tidy(model_outcome2_exposurecont_hla44) %>% 
-  mutate(model = "outcome2_exposurecont_hla44_coefs")
+model_outcome1_exposure2cat_hla1_coefs <- tidy(model_outcome1_exposure2cat_hla1) %>% 
+  mutate(model = "outcome1_exposure2cat_hla1_coefs")
+model_outcome1_exposure2cat_hla2_coefs <- tidy(model_outcome1_exposure2cat_hla2) %>% 
+  mutate(model = "outcome1_exposure2cat_hla2_coefs")
+model_outcome1_exposure2cat_hla3_coefs <- tidy(model_outcome1_exposure2cat_hla3) %>% 
+  mutate(model = "outcome1_exposure2cat_hla3_coefs")
+model_outcome1_exposurecont_hla1_coefs <- tidy(model_outcome1_exposurecont_hla1) %>% 
+  mutate(model = "outcome1_exposurecont_hla1_coefs")
+model_outcome1_exposurecont_hla2_coefs <- tidy(model_outcome1_exposurecont_hla2) %>% 
+  mutate(model = "outcome1_exposurecont_hla2_coefs")
+model_outcome1_exposurecont_hla3_coefs <- tidy(model_outcome1_exposurecont_hla3) %>% 
+  mutate(model = "outcome1_exposurecont_hla3_coefs")
+model_outcome2_exposure2cat_hla1_coefs <- tidy(model_outcome2_exposure2cat_hla1) %>% 
+  mutate(model = "outcome2_exposure2cat_hla1_coefs")
+model_outcome2_exposure2cat_hla2_coefs <- tidy(model_outcome2_exposure2cat_hla2) %>% 
+  mutate(model = "outcome2_exposure2cat_hla2_coefs")
+model_outcome2_exposure2cat_hla3_coefs <- tidy(model_outcome2_exposure2cat_hla3) %>% 
+  mutate(model = "outcome2_exposure2cat_hla3_coefs")
+model_outcome2_exposurecont_hla1_coefs <- tidy(model_outcome2_exposurecont_hla1) %>% 
+  mutate(model = "outcome2_exposurecont_hla1_coefs")
+model_outcome2_exposurecont_hla2_coefs <- tidy(model_outcome2_exposurecont_hla2) %>% 
+  mutate(model = "outcome2_exposurecont_hla2_coefs")
+model_outcome2_exposurecont_hla3_coefs <- tidy(model_outcome2_exposurecont_hla3) %>% 
+  mutate(model = "outcome2_exposurecont_hla3_coefs")
 
 #Merge coefficients
-coefficients <- model_outcome1_exposure2cat_hla33_coefs %>% 
-  full_join(model_outcome1_exposure2cat_hla34_coefs) %>% 
-  full_join(model_outcome1_exposure2cat_hla44_coefs) %>% 
-  full_join(model_outcome1_exposurecont_hla33_coefs) %>% 
-  full_join(model_outcome1_exposurecont_hla34_coefs) %>% 
-  full_join(model_outcome1_exposurecont_hla44_coefs) %>% 
-  full_join(model_outcome2_exposure2cat_hla33_coefs) %>% 
-  full_join(model_outcome2_exposure2cat_hla34_coefs) %>% 
-  full_join(model_outcome2_exposure2cat_hla44_coefs) %>% 
-  full_join(model_outcome2_exposurecont_hla33_coefs) %>% 
-  full_join(model_outcome2_exposurecont_hla34_coefs) %>% 
-  full_join(model_outcome2_exposurecont_hla44_coefs)
+coefficients <- model_outcome1_exposure2cat_hla1_coefs %>% 
+  full_join(model_outcome1_exposure2cat_hla2_coefs) %>% 
+  full_join(model_outcome1_exposure2cat_hla3_coefs) %>% 
+  full_join(model_outcome1_exposurecont_hla1_coefs) %>% 
+  full_join(model_outcome1_exposurecont_hla2_coefs) %>% 
+  full_join(model_outcome1_exposurecont_hla3_coefs) %>% 
+  full_join(model_outcome2_exposure2cat_hla1_coefs) %>% 
+  full_join(model_outcome2_exposure2cat_hla2_coefs) %>% 
+  full_join(model_outcome2_exposure2cat_hla3_coefs) %>% 
+  full_join(model_outcome2_exposurecont_hla1_coefs) %>% 
+  full_join(model_outcome2_exposurecont_hla2_coefs) %>% 
+  full_join(model_outcome2_exposurecont_hla3_coefs)
   
 # Create graph data
 coefficients <- coefficients %>%
@@ -137,9 +137,9 @@ coefficients <- coefficients %>%
   mutate(outcome = str_remove(outcome, "_")) %>% 
   mutate(hla = str_extract(model, "(?<=_).*")) %>% 
   mutate(hla = case_when(
-    hla == "hla33" ~ "HLA DR3/3",
-    hla == "hla34" ~ "HLA DR3/4",
-    hla == "hla44" ~ "HLA DR4/4"))
+    hla == "hla1" ~ "Type 1",
+    hla == "hla2" ~ "Type 2",
+    hla == "hla3" ~ "Type 3"))
 
 # Graph
 coefficients %>%
@@ -176,7 +176,7 @@ survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_con
                                 outcome_vars = c("outcome1", "outcome2"),
                                 covariates = "age + sex + hla",
                                 submodel_var = "hla",
-                                submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
+                                submodel_values = c("Type 1", "Type 2", "Type 3"),
                                 time_var = "cens_time",
                                 data_name = "example_ti")
 
@@ -222,10 +222,10 @@ library(dplyr)
 survtable_1 <- 
   create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
                  outcome_vars = c("outcome1", "outcome2"),
-                 covariates = "age + sex + hla",
+                 covariates = "age + sex",
                  time_var = "cens_time",
                  submodel_var = "hla",
-                 submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
+                 submodel_values = c("Type 1", "Type 2", "Type 3"),
                  data_name = "example_ti")
 ```
 

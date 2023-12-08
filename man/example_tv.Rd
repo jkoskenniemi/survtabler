@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{example_tv}}{
 
-A data frame with 8,000 rows and 9 columns:
+A data frame with 12,000 rows and 9 columns:
 \describe{
 \item{id}{A subject-specific identifier}
 \item{tstart, tstop}{Start and stop times for each interval}
