@@ -6,7 +6,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-9348-3325"))
 Description: 
     Survtabler helps to make survival analysis scripts function-based. This 
-    reduces unnecessary copy-pasting and repetition and makes code easy to read and write.
+    reduces copy-pasting & repetition and makes the analysis scripts easier to write and read.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
