@@ -9,7 +9,10 @@ graph_resids(caught_models, model_list)
 \arguments{
 \item{caught_models}{A data.frame, output from catch_nonph()}
 
-\item{model_list}{A list of Cox proportional hazards models, created by}
+\item{model_list}{A list of Cox proportional hazards models, created by model_survtable()}
+}
+\value{
+ggplot objects that assess the proportionality of hazards
 }
 \description{
 Graph residuals
