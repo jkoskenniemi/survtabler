@@ -35,8 +35,8 @@ model_survtable <- function(survtable) {
     }
     
      model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var,
-                                 survtable$submodel_var, survtable$submodel_value),
-                            function(data_name, formula, exposure_var, outcome_var, submodel_var, submodel_value) {
+                                 survtable$submodel_var, survtable$submodel_value, survtable$time_var),
+                            function(data_name, formula, exposure_var, outcome_var, submodel_var, submodel_value, time_var) {
                               
                               # Construct model names for each model
                               model_name <- ifelse(submodels_requested, 
@@ -59,12 +59,13 @@ model_survtable <- function(survtable) {
                               model <- survival::coxph(formula = cox_formula, data = data_df)
                               
                               # Save model names as an attribute
-                              attr(model, "model_name")    <- model_name
-                              attr(model, "exposure")      <- exposure_var
-                              attr(model, "outcome")       <- outcome_var
-                              attr(model, "data")          <- data_name
-                              attr(model, "submodel_var")  <- submodel_var
+                              attr(model, "model_name")     <- model_name
+                              attr(model, "exposure")       <- exposure_var
+                              attr(model, "outcome")        <- outcome_var
+                              attr(model, "data")           <- data_name
+                              attr(model, "submodel_var")   <- submodel_var
                               attr(model, "submodel_value") <- submodel_value
+                              attr(model, "time")           <- time_var
                               
                               model
                             })
