@@ -29,3 +29,18 @@ Prints schoenfeld residuals using ggcoxdiagnostics from 'survminer' packge
 \description{
 Export residuals
 }
+\examples{
+library(dplyr)
+models_2 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
+outcome_vars = c("outcome1", "outcome2"),
+covariates = "age + sex",
+submodel_var = "hla",
+submodel_values = c("Type 1", "Type 2", "Type 3"),
+time_var = "cens_time",
+data_name = "example_ti") \%>\%
+model_survtable()
+
+models_2 \%>\%
+  catch_nonph() \%>\%
+  export_resids(models_2, height = 6, width = 8, path = paste0(getwd(), "/"))
+}

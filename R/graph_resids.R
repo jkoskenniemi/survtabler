@@ -10,9 +10,23 @@
 #' @return ggplot objects that assess the proportionality of hazards
 #' @export
 #'
-#' @examples
+#' @examples 
+#' library(dplyr)
+#' models_2 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
+#' outcome_vars = c("outcome1", "outcome2"),
+#' covariates = "age + sex",
+#' submodel_var = "hla",
+#' submodel_values = c("Type 1", "Type 2", "Type 3"),
+#' time_var = "cens_time",
+#' data_name = "example_ti") %>%
+#' model_survtable()
+#' 
+#' models_2 %>%
+#'   catch_nonph() %>%
+#'     graph_resids(models_2)
+
 graph_resids <- function(caught_models, model_list) {
-  imap(model_list[unique(caught_models$model)], ~survminer::ggcoxdiagnostics(.x, type = "schoenfeld", title = paste("Residuals for model:", .y)))
+  imap(model_list[unique(caught_models$model)], ~survminer::ggcoxdiagnostics(.x, type = "schoenfeld", title = paste("Residuals for model:", .y, ox.scale = "time")))
 }
 
 #' Export residuals
@@ -33,8 +47,23 @@ graph_resids <- function(caught_models, model_list) {
 #' @return Prints schoenfeld residuals using ggcoxdiagnostics from 'survminer' packge
 #' @export
 #'
-#' @examples
+#' @examples 
+#' library(dplyr)
+#' models_2 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
+#' outcome_vars = c("outcome1", "outcome2"),
+#' covariates = "age + sex",
+#' submodel_var = "hla",
+#' submodel_values = c("Type 1", "Type 2", "Type 3"),
+#' time_var = "cens_time",
+#' data_name = "example_ti") %>%
+#' model_survtable()
+#' 
+#' models_2 %>%
+#'   catch_nonph() %>%
+#'   export_resids(models_2, height = 6, width = 8, path = paste0(getwd(), "/"))
+
 export_resids <- function(caught_models, model_list, path = default_path, height = default_height, width = default_width) {
+  
   name_enquo <- rlang::ensym(model_list)
   filepath_base <- paste0("nonph_viol_", rlang::as_string(name_enquo))
   
@@ -54,7 +83,7 @@ export_resids <- function(caught_models, model_list, path = default_path, height
       stringr::str_replace_all("\\|", "_")
     
     # Generate the diagnostics plot
-    plot <- survminer::ggcoxdiagnostics(.x, type = "schoenfeld", title = paste("Residuals for model:", .y))
+    plot <- survminer::ggcoxdiagnostics(.x, type = "schoenfeld", title = paste("Residuals for model:", .y), ox.scale = "time")
     
     # Debug: Print the filename
     cat("Saving plot to:", paste0(filepath_base, "_", model_name_for_file, ".png"), "\n")
@@ -67,4 +96,7 @@ export_resids <- function(caught_models, model_list, path = default_path, height
     })
   })   
 }
+
+
+
 
