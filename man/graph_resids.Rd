@@ -4,12 +4,43 @@
 \alias{graph_resids}
 \title{Graph residuals}
 \usage{
-graph_resids(caught_models, model_list)
+graph_resids(
+  caught_models,
+  model_list,
+  hline.col = "red",
+  hline.size = 1,
+  hline.alpha = 1,
+  hline.yintercept = 0,
+  hline.lty = "dashed",
+  sline.col = "blue",
+  sline.size = 1,
+  sline.alpha = 0.3,
+  sline.lty = "dashed",
+  point.col = "black",
+  point.size = 1,
+  point.shape = 19,
+  point.alpha = 1,
+  subtitle = NULL,
+  caption = NULL
+)
 }
 \arguments{
 \item{caught_models}{A data.frame, output from catch_nonph()}
 
-\item{model_list}{A list of Cox proportional hazards models, created by model_survtable()}
+\item{model_list}{A list of Cox proportional hazards models, created by
+model_survtable()}
+
+\item{hline.col, hline.size, hline.alpha, hline.yintercept, hline.lty}{optional
+arguments passed to ggplot2::geom_hline() to format the horizontal line}
+
+\item{sline.col, sline.size, sline.alpha, sline.lty}{optional arguments passed
+to ggplot2::geom_smooth() to format the loess}
+
+\item{point.col, point.size, point.shape, point.alpha}{optional arguments passed
+to ggplot2::geom_point() to format points in the graph}
+
+\item{subtitle, caption}{further arguments for formating of the resulting
+ggplot}
 }
 \value{
 ggplot objects that assess the proportionality of hazards

@@ -4,18 +4,22 @@
 #' Graph residuals
 #'
 #' @param caught_models A data.frame, output from catch_nonph()
-#' @param model_list A list of Cox proportional hazards models, created by model_survtable()
-#' @param hline.col,hline.size,hline.alpha,hline.yintercept,hline.lty optional 
-#' arguments passed to ggplot2::geom_hline() to format the horizontal line
-#' @param sline.col,sline.size,sline.alpha,sline.lty optional arguments passed to ggplot2::geom_smooth() to format the loess
-#' @param point.col,point.size,point.shape,point.alpha optional arguments passed to ggplot2::geom_point() to format points in the graph
-#' @param subtitle,caption further arguments for formating of the resulting ggplot
+#' @param model_list A list of Cox proportional hazards models, created by
+#'   model_survtable()
+#' @param hline.col,hline.size,hline.alpha,hline.yintercept,hline.lty optional
+#'   arguments passed to ggplot2::geom_hline() to format the horizontal line
+#' @param sline.col,sline.size,sline.alpha,sline.lty optional arguments passed
+#'   to ggplot2::geom_smooth() to format the loess
+#' @param point.col,point.size,point.shape,point.alpha optional arguments passed
+#'   to ggplot2::geom_point() to format points in the graph
+#' @param subtitle,caption further arguments for formating of the resulting
+#'   ggplot
 #'
 #' @importFrom survminer ggcoxdiagnostics
 #' @return ggplot objects that assess the proportionality of hazards
 #' @export
 #'
-#' @examples 
+#' @examples
 #' library(dplyr)
 #' models_2 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
 #' outcome_vars = c("outcome1", "outcome2"),
@@ -25,7 +29,7 @@
 #' time_var = "cens_time",
 #' data_name = "example_ti") %>%
 #' model_survtable()
-#' 
+#'
 #' models_2 %>%
 #'   catch_nonph() %>%
 #'     graph_resids(models_2)
@@ -78,7 +82,7 @@ graph_resids <- function(caught_models, model_list,
 #'   catch_nonph() %>%
 #'   export_resids(models_2, height = 6, width = 8, path = paste0(getwd(), "/"))
 
-export_resids <- function(caught_models, model_list, path = default_path, height = default_height, width = default_width, ...) {
+export_resids <- function(caught_models, model_list, path = default_path, height = default_height, width = default_width) {
   
   name_enquo <- rlang::ensym(model_list)
   filepath_base <- paste0("nonph_viol_", rlang::as_string(name_enquo))
@@ -125,6 +129,17 @@ library(rlang)
 
 
 
+#' Graph Schoenfeld Residuals
+#'
+#' @param fit Cox Proportional Hazards model fit produced by *model_survtable()*
+#' @param title,subtitle,caption optional formatting passed to ggplot2::labels()
+#' @param hline.col,hline.size,hline.alpha,hline.yintercept,hline.lty optional formatting passed to ggplot2::geom_hline()
+#' @param sline.col,sline.size,sline.alpha,sline.lty optional formatting passed to ggplot2::geom_smooth()
+#' @param point.col,point.size,point.shape,point.alpha optional formatting passed to ggplot2::geom_point()
+#'
+#' @return ggplot2 object that contains schoenfeld residuals
+#'
+#' @examples
 graph_schoenfeld <- function(fit, title=NULL, 
                              hline.col = "red", hline.size = 1, hline.alpha = 1, hline.yintercept = 0, hline.lty = 'dashed',
                              sline.col = "blue", sline.size = 1, sline.alpha = 0.3, sline.lty = 'dashed',
