@@ -9,7 +9,22 @@ export_resids(
   model_list,
   path = default_path,
   height = default_height,
-  width = default_width
+  width = default_width,
+  hline.col = "red",
+  hline.size = 1,
+  hline.alpha = 1,
+  hline.yintercept = 0,
+  hline.lty = "dashed",
+  sline.col = "blue",
+  sline.size = 1,
+  sline.alpha = 0.3,
+  sline.lty = "dashed",
+  point.col = "black",
+  point.size = 1,
+  point.shape = 19,
+  point.alpha = 1,
+  subtitle = NULL,
+  caption = NULL
 )
 }
 \arguments{
@@ -22,6 +37,18 @@ export_resids(
 \item{height}{Height of the output png-file. Defaults to external vector \emph{default_height}}
 
 \item{width}{Width of the output png-file. Defaults to external vector \emph{default_weight}}
+
+\item{hline.col, hline.size, hline.alpha, hline.yintercept, hline.lty}{optional
+arguments passed to ggplot2::geom_hline() to format the horizontal line}
+
+\item{sline.col, sline.size, sline.alpha, sline.lty}{optional arguments passed
+to ggplot2::geom_smooth() to format the loess}
+
+\item{point.col, point.size, point.shape, point.alpha}{optional arguments passed
+to ggplot2::geom_point() to format points in the graph}
+
+\item{subtitle, caption}{further arguments for formating of the resulting
+ggplot}
 }
 \value{
 Prints schoenfeld residuals using ggcoxdiagnostics from 'survminer' packge

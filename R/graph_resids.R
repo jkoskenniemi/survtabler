@@ -56,6 +56,15 @@ graph_resids <- function(caught_models, model_list,
 #' @param height Height of the output png-file. Defaults to external vector *default_height*
 #' @param width Width of the output png-file. Defaults to external vector *default_weight*
 #' @param path filepath to output folder. Defaults to an external vector *default_path*
+#' @param hline.col,hline.size,hline.alpha,hline.yintercept,hline.lty optional
+#'   arguments passed to ggplot2::geom_hline() to format the horizontal line
+#' @param sline.col,sline.size,sline.alpha,sline.lty optional arguments passed
+#'   to ggplot2::geom_smooth() to format the loess
+#' @param point.col,point.size,point.shape,point.alpha optional arguments passed
+#'   to ggplot2::geom_point() to format points in the graph
+#' @param subtitle,caption further arguments for formating of the resulting
+#'   ggplot
+
 #'
 #' @importFrom survminer ggcoxdiagnostics
 #' @importFrom rlang ensym
@@ -82,7 +91,11 @@ graph_resids <- function(caught_models, model_list,
 #'   catch_nonph() %>%
 #'   export_resids(models_2, height = 6, width = 8, path = paste0(getwd(), "/"))
 
-export_resids <- function(caught_models, model_list, path = default_path, height = default_height, width = default_width) {
+export_resids <- function(caught_models, model_list, path = default_path, height = default_height, width = default_width,
+                          hline.col = "red", hline.size = 1, hline.alpha = 1, hline.yintercept = 0, hline.lty = 'dashed',
+                          sline.col = "blue", sline.size = 1, sline.alpha = 0.3, sline.lty = 'dashed',
+                          point.col = "black", point.size = 1, point.shape = 19, point.alpha = 1,
+                          subtitle = NULL, caption = NULL) {
   
   name_enquo <- rlang::ensym(model_list)
   filepath_base <- paste0("nonph_viol_", rlang::as_string(name_enquo))
