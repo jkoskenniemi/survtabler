@@ -66,5 +66,6 @@ graph_coefs <- function(data, title) {
     ggplot2::theme(legend.position = "none") +
     ggplot2::ggtitle({{ title }}) +
     ggplot2::scale_y_continuous(trans = "log", labels = scales::label_number(max_n = 2)) +
+    ggplot2::scale_colour_manual(values = c("grey51","grey40")) +
     ggplot2::facet_wrap(~factor(graph_facet))
 }
