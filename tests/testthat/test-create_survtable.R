@@ -1,8 +1,8 @@
 helper_test_survtable <- function(exposure_vars = c("exposure_2cat", "exposure_continuous"),
                                   outcome_vars = c("outcome1", "outcome2"),
                                   covariates = "age + sex",
-                                  submodel_var = "hla",
-                                  submodel_values = c("DR3/3", "DR3/4", "DR4/4"),
+                                  submodel_var = NULL,
+                                  submodel_values = NULL,
                                   time_var = "cens_time",
                                   data_name = "example_ti",
                                   model_type = "ti") {
@@ -21,34 +21,35 @@ helper_test_survtable <- function(exposure_vars = c("exposure_2cat", "exposure_c
 
 default_covariates <- "age + sex + hla"
 
-survtable_1 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
-                                outcome_vars = c("outcome1", "outcome2"),
-                                covariates = "age + sex + hla",
-                                time_var = "cens_time",
-                                data_name = "example_ti")
+#Basic case
+survtable_1 <- helper_test_survtable()
+#Submodel case
+survtable_2 <- helper_test_survtable(submodel_var = "hla",
+                                     submodel_values = c("Type 1", "Type 2", "Type 3"))
+#Multiple covariates
+survtable_3 <- helper_test_survtable(covariates = c("age", "sex"))
 
-survtable_2 <- create_survtable(exposure_vars = c("exposure_2cat", "exposure_continuous"),
-                                outcome_vars = c("outcome1", "outcome2"),
-                                covariates = "age + sex",
-                                submodel_var = "hla",
-                                submodel_values = c("Type 1", "Type 2", "Type 3"),
-                                time_var = "cens_time",
-                                data_name = "example_ti")
-
+#Try models
 models_1 <- model_survtable(survtable_1)
 models_2 <- model_survtable(survtable_2)
+models_3 <- model_survtable(survtable_3)
 
 coefs_1 <- get_coefs(models_1)
 coefs_2 <- get_coefs(models_2)
+coefs_3 <- get_coefs(models_3)
 
 model_meta_1 <- get_model_meta(models_1)
 model_meta_2 <- get_model_meta(models_2)
+model_meta_3 <- get_model_meta(models_3)
 
 coefs_1 %>%
   graph_coefs("title")
 
 coefs_2 %>%
   graph_coefs("title")
+
+coefs_3 %>%
+  graph_coefs("title") #graphs are stacked on top of each other
 
 caught_models_1 <- catch_nonph(models_1)
 caught_models_2 <- catch_nonph(models_2)
