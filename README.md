@@ -7,8 +7,9 @@
 <!-- badges: end -->
 
 `survival` package in R is great for interactively and flexibly running
-survival models. However, it does not teach a structure for an efficient
-workflow. The aim of `survtabler` is to make survival analysis fast,
+survival models. However, typically it has to be used in *imperative* way, 
+which means that analyses typically require a lot of copy-pasting.
+The aim of `survtabler` is to make survival analysis fast,
 concise, and intuitive, while keeping the analysis code easy to read.
 This is achieved by *function-based* workflow, where many typical steps
 (modeling, graphing, analyses of violations of proportional hazards
@@ -223,7 +224,7 @@ devtools::install_github("jkoskenniemi/survtabler")
 
 ## Example
 
-Below, we go through the steps of the earlier example in more detail.
+Below, the steps of the earlier `survtable` example are shown in more detail.
 
 The first step is to plan and specify the Survival models that are
 analyzed. `create_survtable()` builds a `survtable`, a ‘recipe’
