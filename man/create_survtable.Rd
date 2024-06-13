@@ -12,7 +12,8 @@ create_survtable(
   covariates = default_covariates,
   model_type = "time_invariant",
   submodel_var = NULL,
-  submodel_values = NULL
+  submodel_values = NULL,
+  exposure_data = NULL
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ data_name that specifies subgroups. Defaults to NULL.}
 
 \item{submodel_values}{Optional. Input string specifying the values of
 submodel_var that define subgroups. Defaults to NULL.}
+
+\item{restrict_exposure_data}{Optional. A matrix specifying which combinations of
+\code{exposure_var} and \code{data_name} are allowed.}
 }
 \value{
 Hopefully one day an obejct with class \code{survtable}. Currently a

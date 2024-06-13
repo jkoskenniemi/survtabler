@@ -57,11 +57,6 @@ caught_models_2 <- catch_nonph(models_2)
 caught_models_1
 caught_models_2
 
-default_path <- paste0(getwd(), "/")
-default_height <- 6
-default_width <- 8
-export_resids(caught_models_2, models_2)
-
 
 
 # 3
