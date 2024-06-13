@@ -19,6 +19,8 @@
 #'   data_name that specifies subgroups. Defaults to NULL.
 #' @param submodel_values Optional. Input string specifying the values of
 #'   submodel_var that define subgroups. Defaults to NULL.
+#' @param restrict_exposure_data Optional. A matrix specifying which combinations of 
+#' `exposure_var` and `data_name` are allowed. 
 #'
 #' @returns Hopefully one day an obejct with class `survtable`. Currently a
 #'   tibble that includes a model data_name formula for survival analysis as well as
@@ -44,7 +46,8 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                              covariates = default_covariates,
                              model_type = "time_invariant",
                              submodel_var = NULL,
-                             submodel_values = NULL) {
+                             submodel_values = NULL,
+                             exposure_data = NULL) {
 
   #Checks for validity of model inputs
   # check_survtable_input(exposure_vars = exposure_vars, 
@@ -65,7 +68,8 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                                          time_var = time_var,
                                          outcome_vars = outcome_vars,
                                          submodel_var = submodel_var,
-                                         submodel_values = submodel_values)
+                                         submodel_values = submodel_values,
+                                         covariates = covariates)
   # #Filter data 
   # combinations_data <- add_data_filter(combinations)
   
@@ -77,7 +81,7 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                           time_var = time_var, 
                           outcome_var = outcome_var,
                           exposure_var = exposure_var,
-                          covariates = covariates)
+                          covariate_var = covariate_var)
   
 }
 
@@ -109,7 +113,7 @@ if (!is.character(time_var) || any(purrr::map_lgl(time_var, ~ exists(.x)))) {
 }
 
 construct_combinations <-
-  function(data_name, exposure_vars, outcome_vars, time_var,
+  function(data_name, exposure_vars, outcome_vars, time_var, covariates,
            submodel_var, submodel_values) {
 
         if(is.null(submodel_var) && !is.null(submodel_values)) {
@@ -126,7 +130,8 @@ construct_combinations <-
                       "data_name" = data_name,
                       "exposure_var" = exposure_vars,
                       "outcome_var" = outcome_vars,
-                      "time_var" = time_var)
+                      "time_var" = time_var,
+                      "covariate_var" = covariates)
 
     }
     
@@ -155,15 +160,15 @@ construct_combinations <-
 
 
 
-construct_model_formula <- function(df, model_type, time_var, outcome_var, exposure_var, covariates) {
+construct_model_formula <- function(df, model_type, time_var, outcome_var, exposure_var, covariate_var) {
  
     if(model_type %in% c("ti", "time_invariant")) {
       df <- dplyr::mutate(df, formula = 
-                            paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariates))
+                            paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariate_var))
     } else if(model_type %in% c("tv", "time_variant", "time_varying")) {
       df <- dplyr::mutate(df, formula = paste0(
         "Surv(tstart, tstop, ", outcome_var, ") ~ ", exposure_var,
-        " + ", covariates))
+        " + ", covariate_var))
     } else {
       error("invalid model type")
     }
