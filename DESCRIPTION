@@ -1,6 +1,6 @@
 Package: survtabler
 Title: Wrappers for Fast, Concise, and Easy-to-Read Survival Analysis
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: 
     person("Jaakko", "Koskenniemi", , "jajoko@utu.fi", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9348-3325"))
