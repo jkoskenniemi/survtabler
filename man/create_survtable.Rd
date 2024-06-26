@@ -13,25 +13,25 @@ create_survtable(
   model_type = "time_invariant",
   submodel_var = NULL,
   submodel_values = NULL,
-  exposure_data = NULL
+  cluster = NULL
 )
 }
 \arguments{
-\item{exposure_vars, time_var, outcome_vars, data_name}{Input string vectors specifying
-variables for exposure_vars of primary interest, follow-up time_var, and outcome_vars
-in survival analysis as well as survival model data_name. These are passed to
-tidyr::crossing() to produce all possible combinations of the 4 vectors.
-Note! \code{exposure_vars}, \code{time_var}, and \code{outcome_vars} refer to variable names in the
-target data_name frame whereas \code{data_name} refers to a data_name.frame in the R
-environment.}
+\item{exposure_vars, time_var, outcome_vars, data_name}{Input string vectors
+specifying variables for exposure_vars of primary interest, follow-up
+time_var, and outcome_vars in survival analysis as well as survival model
+data_name. These are passed to tidyr::crossing() to produce all possible
+combinations of the 4 vectors. Note! \code{exposure_vars}, \code{time_var}, and
+\code{outcome_vars} refer to variable names in the target data_name frame
+whereas \code{data_name} refers to a data_name.frame in the R environment.}
 
 \item{covariates}{Input string with length 1 specifying other variables that
-are adjusted for. Defaults to default_covariates, an external vector (it is set NULL
-if no object default_covariates is found)}
+are adjusted for. Defaults to default_covariates, an external vector (it is
+set NULL if no object default_covariates is found)}
 
 \item{model_type}{Input string specifying whether the model type is
-time_var-invariant ("ti" or "time_var_invariant) or time_var-varying ("tv" or
-"time_var_varying"). Defaults to "time_var_invariant"}
+time_var-invariant ("ti" or "time_var_invariant) or time_var-varying ("tv"
+or "time_var_varying"). Defaults to "time_var_invariant"}
 
 \item{submodel_var}{Optional. Input string specifying the variable in study
 data_name that specifies subgroups. Defaults to NULL.}
@@ -39,8 +39,9 @@ data_name that specifies subgroups. Defaults to NULL.}
 \item{submodel_values}{Optional. Input string specifying the values of
 submodel_var that define subgroups. Defaults to NULL.}
 
-\item{restrict_exposure_data}{Optional. A matrix specifying which combinations of
-\code{exposure_var} and \code{data_name} are allowed.}
+\item{cluster}{Optional. Optional variable which clusters the observations,
+for the purposes of a robust variance.  Defaults to NULL. See help(coxph)
+for further details.}
 }
 \value{
 Hopefully one day an obejct with class \code{survtable}. Currently a
