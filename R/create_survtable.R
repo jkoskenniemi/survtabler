@@ -19,9 +19,7 @@
 #'   data_name that specifies subgroups. Defaults to NULL.
 #' @param submodel_values Optional. Input string specifying the values of
 #'   submodel_var that define subgroups. Defaults to NULL.
-#' @param cluster Optional. Optional variable which clusters the observations,
-#'   for the purposes of a robust variance.  Defaults to NULL. See help(coxph) 
-#'   for further details.
+
 
 #'
 #' @returns Hopefully one day an obejct with class `survtable`. Currently a
@@ -49,8 +47,7 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                              covariates = default_covariates,
                              model_type = "time_invariant",
                              submodel_var = NULL,
-                             submodel_values = NULL,
-                             cluster = NULL) {
+                             submodel_values = NULL) {
 
   #Checks for validity of model inputs
   # check_survtable_input(exposure_vars = exposure_vars, 
@@ -84,8 +81,7 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                           time_var = time_var, 
                           outcome_var = outcome_var,
                           exposure_var = exposure_var,
-                          covariate_var = covariate_var,
-                          cluster = cluster)
+                          covariate_var = covariate_var)
   
 }
 
@@ -164,12 +160,11 @@ construct_combinations <-
 
 
 
-construct_model_formula <- function(df, model_type, time_var, outcome_var, exposure_var, covariate_var, cluster) {
+construct_model_formula <- function(df, model_type, time_var, outcome_var, exposure_var, covariate_var) {
  
     if(model_type %in% c("ti", "time_invariant")) {
       df <- dplyr::mutate(df, formula = 
-                            paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariate_var,
-                                   ifelse(is.null(cluster), "", paste0("cluster =", cluster))))
+                            paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariate_var))
     } else if(model_type %in% c("tv", "time_variant", "time_varying")) {
       df <- dplyr::mutate(df, formula = paste0(
         "Surv(tstart, tstop, ", outcome_var, ") ~ ", exposure_var,
