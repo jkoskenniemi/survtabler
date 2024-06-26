@@ -22,7 +22,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom broom tidy
 #' @importFrom stringr str_extract
-#'
+#' @importFrom stats coef
 #' @export
 
 
