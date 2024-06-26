@@ -12,8 +12,7 @@ create_survtable(
   covariates = default_covariates,
   model_type = "time_invariant",
   submodel_var = NULL,
-  submodel_values = NULL,
-  cluster = NULL
+  submodel_values = NULL
 )
 }
 \arguments{
@@ -38,10 +37,6 @@ data_name that specifies subgroups. Defaults to NULL.}
 
 \item{submodel_values}{Optional. Input string specifying the values of
 submodel_var that define subgroups. Defaults to NULL.}
-
-\item{cluster}{Optional. Optional variable which clusters the observations,
-for the purposes of a robust variance.  Defaults to NULL. See help(coxph)
-for further details.}
 }
 \value{
 Hopefully one day an obejct with class \code{survtable}. Currently a
