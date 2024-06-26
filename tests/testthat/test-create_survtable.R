@@ -5,7 +5,8 @@ helper_test_survtable <- function(exposure_vars = c("exposure_2cat", "exposure_c
                                   submodel_values = NULL,
                                   time_var = "cens_time",
                                   data_name = "example_ti",
-                                  model_type = "ti") {
+                                  model_type = "ti",
+                                  cluster = NULL) {
   create_survtable(
     exposure_vars = exposure_vars,
     outcome_vars = outcome_vars,
@@ -28,6 +29,10 @@ survtable_2 <- helper_test_survtable(submodel_var = "hla",
                                      submodel_values = c("Type 1", "Type 2", "Type 3"))
 #Multiple covariates
 survtable_3 <- helper_test_survtable(covariates = c("age", "sex"))
+
+#Multiple cluster
+survtable_3 <- helper_test_survtable(covariates = c("age", "sex"), cluster = "id")
+
 
 #Try models
 models_1 <- model_survtable(survtable_1)
