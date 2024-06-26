@@ -27,6 +27,7 @@
 
 
 get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) {
+  robust_estimator_used <- FALSE
   models_tidy <- purrr::map_df(model_list, function(model) {
     
     if(is.null(select_exposures)) {
@@ -62,11 +63,14 @@ get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) 
                       outcome  = attr_outcome_var,
                       submodel_var = attr_submodel_var,
                       submodel_value = attr_submodel_value)
+      robust_estimator_used <<- TRUE
     }
     
     return(tidy_data)
   })
-
+  if (robust_estimator_used)  {
+    cat("Robust standard errors obtained from summary.coxph(model_fit).")
+  }
   models_tidy
 }
 
