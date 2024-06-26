@@ -2,25 +2,27 @@
 #'
 #' Builds a data.frame that includes
 #'
-#' @param exposure_vars,time_var,outcome_vars,data_name Input string vectors specifying
-#'   variables for exposure_vars of primary interest, follow-up time_var, and outcome_vars
-#'   in survival analysis as well as survival model data_name. These are passed to
-#'   tidyr::crossing() to produce all possible combinations of the 4 vectors.
-#'   Note! `exposure_vars`, `time_var`, and `outcome_vars` refer to variable names in the
-#'   target data_name frame whereas `data_name` refers to a data_name.frame in the R
-#'   environment.
+#' @param exposure_vars,time_var,outcome_vars,data_name Input string vectors
+#'   specifying variables for exposure_vars of primary interest, follow-up
+#'   time_var, and outcome_vars in survival analysis as well as survival model
+#'   data_name. These are passed to tidyr::crossing() to produce all possible
+#'   combinations of the 4 vectors. Note! `exposure_vars`, `time_var`, and
+#'   `outcome_vars` refer to variable names in the target data_name frame
+#'   whereas `data_name` refers to a data_name.frame in the R environment.
 #' @param covariates Input string with length 1 specifying other variables that
-#'   are adjusted for. Defaults to default_covariates, an external vector (it is set NULL
-#'   if no object default_covariates is found)
+#'   are adjusted for. Defaults to default_covariates, an external vector (it is
+#'   set NULL if no object default_covariates is found)
 #' @param model_type Input string specifying whether the model type is
-#'   time_var-invariant ("ti" or "time_var_invariant) or time_var-varying ("tv" or
-#'   "time_var_varying"). Defaults to "time_var_invariant"
+#'   time_var-invariant ("ti" or "time_var_invariant) or time_var-varying ("tv"
+#'   or "time_var_varying"). Defaults to "time_var_invariant"
 #' @param submodel_var Optional. Input string specifying the variable in study
 #'   data_name that specifies subgroups. Defaults to NULL.
 #' @param submodel_values Optional. Input string specifying the values of
 #'   submodel_var that define subgroups. Defaults to NULL.
-#' @param restrict_exposure_data Optional. A matrix specifying which combinations of 
-#' `exposure_var` and `data_name` are allowed. 
+#' @param cluster Optional. Optional variable which clusters the observations,
+#'   for the purposes of a robust variance.  Defaults to NULL. See help(coxph) 
+#'   for further details.
+
 #'
 #' @returns Hopefully one day an obejct with class `survtable`. Currently a
 #'   tibble that includes a model data_name formula for survival analysis as well as
@@ -30,6 +32,7 @@
 #' @importFrom tidyr crossing
 #' @importFrom purrr map_lgl
 #' @importFrom stringr str_remove
+#' @importFrom utils globalVariables
 #'
 #'
 #' @examples
@@ -47,7 +50,7 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                              model_type = "time_invariant",
                              submodel_var = NULL,
                              submodel_values = NULL,
-                             exposure_data = NULL) {
+                             cluster = NULL) {
 
   #Checks for validity of model inputs
   # check_survtable_input(exposure_vars = exposure_vars, 
@@ -81,7 +84,8 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
                           time_var = time_var, 
                           outcome_var = outcome_var,
                           exposure_var = exposure_var,
-                          covariate_var = covariate_var)
+                          covariate_var = covariate_var,
+                          cluster = cluster)
   
 }
 
@@ -89,10 +93,10 @@ create_survtable <- function(exposure_vars, outcome_vars, data_name, time_var,
 
 
 check_survtable_input <- function(exposure_vars, outcome_vars, data_name, time_var,
-                                    covariates = NULL,
-                                    model_type = "time_invariant",
-                                    submodel_var = NULL,
-                                    submodel_values = NULL) {
+                                  covariates = NULL,
+                                  model_type = "time_invariant",
+                                  submodel_var = NULL,
+                                  submodel_values = NULL) {
 
 if (length(covariates) != 1 & !is.null(covariates)) stop("Invalid specification of input 'covariates'. `covariates` should have length of 1. See help(create_survtable)")
 if (!is.character(covariates) & !is.null(covariates)) stop("Invalid specification of input `covariates`. `covariates` should be a character vector with length == 1. See help(create_survtable)")
@@ -160,11 +164,12 @@ construct_combinations <-
 
 
 
-construct_model_formula <- function(df, model_type, time_var, outcome_var, exposure_var, covariate_var) {
+construct_model_formula <- function(df, model_type, time_var, outcome_var, exposure_var, covariate_var, cluster) {
  
     if(model_type %in% c("ti", "time_invariant")) {
       df <- dplyr::mutate(df, formula = 
-                            paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariate_var))
+                            paste0("Surv(", time_var, ", ", outcome_var, ") ~ ", exposure_var, " + ", covariate_var,
+                                   ifelse(is.null(cluster), "", paste0("cluster =", cluster))))
     } else if(model_type %in% c("tv", "time_variant", "time_varying")) {
       df <- dplyr::mutate(df, formula = paste0(
         "Surv(tstart, tstop, ", outcome_var, ") ~ ", exposure_var,
@@ -180,3 +185,5 @@ construct_model_formula <- function(df, model_type, time_var, outcome_var, expos
     
     df
 }
+
+utils::globalVariables()
