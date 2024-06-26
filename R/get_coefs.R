@@ -29,11 +29,6 @@
 get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) {
   models_tidy <- purrr::map_df(model_list, function(model) {
     
-    if(!is.null(select_terms)) {
-      message("Update 0.0.1 made select_terms optional. get_coefs() finds all exposures specified during create_survtable(). please change select_terms to select_exposures.")
-      select_exposures <- select_terms
-    }
-    
     if(is.null(select_exposures)) {
       select_exposures <- map(model_list, get_exposures)
     }
@@ -45,16 +40,30 @@ get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) 
     attr_data           <- attr(model, "data")
     attr_submodel_value <- attr(model, "submodel_value")  
     attr_submodel_var   <- attr(model, "submodel_var")
+    attr_cluster        <- attr(model, "cluster")
     
     #capture model data
-    tidy_data <- broom::tidy(model) %>%
-      dplyr::filter(term %in% select_exposures) %>%
-      dplyr::mutate(model_name = attr_model_name)  %>%
-      dplyr::mutate(data = attr_data,
-             exposure =attr_exposure_var,
-             outcome = attr_outcome_var,
-             submodel_var = attr_submodel_var,
-             submodel_value = attr_submodel_value)
+    if (rlang::quo_is_null(attr_cluster)) {
+      tidy_data <- broom::tidy(model) %>%
+        dplyr::filter(term %in% select_exposures) %>%
+        dplyr::mutate(model_name = attr_model_name)  %>%
+        dplyr::mutate(data = attr_data,
+                      exposure = attr_exposure_var,
+                      outcome  = attr_outcome_var,
+                      submodel_var = attr_submodel_var,
+                      submodel_value = attr_submodel_value)
+    } else {
+      tidy_data <- model %>% 
+        get_robust_coef() %>% 
+        dplyr::rename(estimate = coef, se = robust.se) %>% 
+        dplyr::filter(term %in% select_exposures) %>%
+        dplyr::mutate(data = attr_data,
+                      exposure = attr_exposure_var,
+                      outcome  = attr_outcome_var,
+                      submodel_var = attr_submodel_var,
+                      submodel_value = attr_submodel_value)
+    }
+    
     return(tidy_data)
   })
 
@@ -62,10 +71,16 @@ get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) 
 }
 
 
-
-
 get_exposures <- function(model_list) {
   attr(model_list, "exposure")
 }  
 
 
+get_robust_coef <- function(x, ...) {
+  s <- summary(x)$coefficients
+  data.frame(
+    term = row.names(s),
+    robust.se = s[, "robust se", drop = FALSE],
+    coef = s[, "coef", drop = FALSE]) 
+  
+}
