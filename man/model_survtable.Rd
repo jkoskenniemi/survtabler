@@ -4,11 +4,15 @@
 \alias{model_survtable}
 \title{Model Survival Using Cox Proportional Hazards Models}
 \usage{
-model_survtable(survtable)
+model_survtable(survtable, cluster = NULL)
 }
 \arguments{
 \item{survtable}{A data.frame containing \code{data_name}, \code{formula_str}, \code{submodel_var}, \code{submodel_value},
 \code{outcome_var} and \code{exposure_var}}
+
+\item{cluster}{Optional. Optional unquoted variable which clusters the observations,
+for the purposes of a robust variance.  Defaults to NULL. See help(coxph)
+for further details.}
 }
 \value{
 A list of survival models with legnth of the number of rows in input data.frame.
