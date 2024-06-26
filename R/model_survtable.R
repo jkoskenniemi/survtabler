@@ -3,7 +3,9 @@
 #'
 #' @param survtable A data.frame containing `data_name`, `formula_str`, `submodel_var`, `submodel_value`,
 #' `outcome_var` and `exposure_var`
-#'
+#' @param cluster Optional. Optional unquoted variable which clusters the observations,
+#' for the purposes of a robust variance.  Defaults to NULL. See help(coxph) 
+#' for further details.
 #' @return A list of survival models with legnth of the number of rows in input data.frame.
 
 #' @importFrom magrittr %>%
@@ -25,7 +27,7 @@
 #' @export
 
 
-model_survtable <- function(survtable) {
+model_survtable <- function(survtable, cluster = NULL) {
   
   #Add ifelse here that is passed to function below
     submodels_requested <- ifelse("submodel_var" %in% names(survtable) & "submodel_var" %in% names(survtable), TRUE, FALSE)
@@ -34,7 +36,9 @@ model_survtable <- function(survtable) {
       survtable <- dplyr::mutate(survtable, submodel_var = NA, submodel_value = NA)
     }
     
-     model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var,
+    cluster <- rlang::enquo(cluster)
+    
+    model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var,
                                  survtable$submodel_var, survtable$submodel_value, survtable$time_var),
                             function(data_name, formula, exposure_var, outcome_var, submodel_var, submodel_value, time_var) {
                               
@@ -54,9 +58,12 @@ model_survtable <- function(survtable) {
                               
                               # Construct and evaluate the formula
                               cox_formula <- stats::as.formula(formula)
+                              
+                              # Evaluate the cluster argument within the data_df context
+                              cluster_var <- rlang::eval_tidy(cluster, data_df)
+                              
                               # Run cox ph models
-                              # model <- analyze_coxph(data_df, cox_formula)
-                              model <- survival::coxph(formula = cox_formula, data = data_df)
+                              model = survival::coxph(formula = cox_formula, data = data_df, cluster = cluster_var)
                               
                               # Save model names as an attribute
                               attr(model, "model_name")     <- model_name
@@ -66,6 +73,7 @@ model_survtable <- function(survtable) {
                               attr(model, "submodel_var")   <- submodel_var
                               attr(model, "submodel_value") <- submodel_value
                               attr(model, "time")           <- time_var
+                              attr(model, "cluster")        <- cluster
                               
                               model
                             })
