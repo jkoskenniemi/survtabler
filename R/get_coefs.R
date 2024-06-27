@@ -56,20 +56,26 @@ get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) 
     } else {
       tidy_data <- model %>% 
         get_robust_coef() %>% 
-        dplyr::rename(estimate = coef, se = robust.se) %>% 
+        dplyr::rename(estimate = coef, std.error = robust.se) %>% 
         dplyr::filter(term %in% select_exposures) %>%
+        dplyr::mutate(model_name = attr_model_name)  %>%
         dplyr::mutate(data = attr_data,
                       exposure = attr_exposure_var,
                       outcome  = attr_outcome_var,
                       submodel_var = attr_submodel_var,
-                      submodel_value = attr_submodel_value)
+                      submodel_value = attr_submodel_value) %>% 
+        dplyr::rename(p.value = 3) %>% 
+        dplyr::select(term, estimate, std.error, model_name, data, p.value,
+                      submodel_var, submodel_value, outcome, exposure)
+      
+      rownames(tidy_data) <- NULL
       robust_estimator_used <<- TRUE
     }
     
     return(tidy_data)
   })
   if (robust_estimator_used)  {
-    cat("Robust standard errors obtained from summary.coxph(model_fit).")
+    cat("Robust standard errors obtained from summary.coxph(model_fit).\n")
   }
   models_tidy
 }
@@ -85,6 +91,6 @@ get_robust_coef <- function(x, ...) {
   data.frame(
     term = row.names(s),
     robust.se = s[, "robust se", drop = FALSE],
-    coef = s[, "coef", drop = FALSE]) 
-  
+    p.value = s[, "Pr(>|z|)", drop = FALSE],
+    coef = s[, "coef", drop = FALSE])  
 }
