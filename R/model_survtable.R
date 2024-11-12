@@ -39,8 +39,8 @@ model_survtable <- function(survtable, cluster = NULL) {
     cluster <- rlang::enquo(cluster)
     
     model_list <- purrr::pmap(list(survtable$data_name, survtable$formula, survtable$exposure_var, survtable$outcome_var,
-                                 survtable$submodel_var, survtable$submodel_value, survtable$time_var),
-                            function(data_name, formula, exposure_var, outcome_var, submodel_var, submodel_value, time_var) {
+                                 survtable$submodel_var, survtable$submodel_value, survtable$time_var, survtable$covariate_var),
+                            function(data_name, formula, exposure_var, outcome_var, submodel_var, submodel_value, time_var, covariate_var) {
                               
                               # Construct model names for each model
                               model_name <- ifelse(submodels_requested, 
@@ -74,6 +74,7 @@ model_survtable <- function(survtable, cluster = NULL) {
                               attr(model, "submodel_value") <- submodel_value
                               attr(model, "time")           <- time_var
                               attr(model, "cluster")        <- cluster
+                              attr(model, "covariates")        <- covariate_var
                               
                               model
                             })

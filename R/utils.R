@@ -20,4 +20,4 @@ utils::globalVariables(c("error", "outcome_var", "exposure_var", "covariate_var"
                          "term", "p.value", "sig", "outcome", "term" ,"estimate", 
                          "std.error", "position_dodge", "element_text", "element_rect", "element_blank",
                          "p", "sig", "submodel_value", "robust.se",
-                         "data", "model_name", "submodel_var", "exposure")) 
+                         "data", "model_name", "submodel_var", "exposure", "covariates")) 

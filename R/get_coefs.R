@@ -42,6 +42,7 @@ get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) 
     attr_submodel_value <- attr(model, "submodel_value")  
     attr_submodel_var   <- attr(model, "submodel_var")
     attr_cluster        <- attr(model, "cluster")
+    attr_covariates        <- attr(model, "covariates")
     
     #capture model data
     if (rlang::quo_is_null(attr_cluster)) {
@@ -52,7 +53,8 @@ get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) 
                       exposure = attr_exposure_var,
                       outcome  = attr_outcome_var,
                       submodel_var = attr_submodel_var,
-                      submodel_value = attr_submodel_value)
+                      submodel_value = attr_submodel_value,
+                      covariates = attr_covariates)
     } else {
       tidy_data <- model %>% 
         get_robust_coef() %>% 
@@ -63,10 +65,12 @@ get_coefs <- function(model_list, select_exposures = NULL, select_terms = NULL) 
                       exposure = attr_exposure_var,
                       outcome  = attr_outcome_var,
                       submodel_var = attr_submodel_var,
-                      submodel_value = attr_submodel_value) %>% 
+                      submodel_value = attr_submodel_value,
+                      covariates = attr_covariates) %>% 
         dplyr::rename(p.value = 3) %>% 
         dplyr::select(term, estimate, std.error, model_name, data, p.value,
-                      submodel_var, submodel_value, outcome, exposure)
+                      submodel_var, submodel_value, outcome, exposure,
+                      covariates)
       
       rownames(tidy_data) <- NULL
       robust_estimator_used <<- TRUE
